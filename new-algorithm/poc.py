@@ -1,32 +1,41 @@
 import networkx as nx
 
 def compute_triangles(graph):
-    return nx.triangles(graph) # TODO divide by 3
+    triangles = {}
+    for node, number_triangles in graph.items():
+        triangles[node] = number_triangles / 3
+    return nx.triangles(graph)
 
-def get_t_n():
-    pass
-    # TODO
+def get_t_n(triangles):
+    max = 0
+    max_node = None
+    for node, number_triangles in triangles.items():
+        if max < number_triangles:
+            max = number_triangles
+            max_node = node
+    return max, max_node
 
-def verify_clique(graph):
+def is_clique(graph):
     n = graph.number_of_nodes()
     return graph.number_of_edges() == n * (n - 1) / 2  
 
 
-def explore (node, father, graph):
-    graph = graph.keep_only_neighbors(node) 
+def explore(node, father, _graph, max_computed_cl):
+    if is_clique(_graph):
+        return _graph
+    graph = _graph.intersect(graph.neighbors(node)) 
     triangles = compute_triangles (graph)
-    clique = verify_clique (graph)
     k_triangles, next_neighbor = get_t_n (triangles)
     while k_triangles > len(clique) or next_neighbor != None:
-        clique = explore (next_neighbor, node, graph)
-        (k_triangles,next_neighbor) = get_t_n (triangles) 
-        return clique
+        clique = explore(next_neighbor, node, graph)
+        k_triangles,next_neighbor = get_t_n (triangles) 
+    return clique
 
-def main (graph):
-    # graph := compute_2-core (graph)   # esto es una optimizacion 
+def main(graph):
+    graph = nx(graph, 2)   # esto es una optimizacion 
     max_clique = set()
     for node in graph:
-        (k_triangles,next_neighbor) = get_t_n (triangles)
+        k_triangles, next_neighbor = get_t_n (triangles)
         clique = explore (node, node, graph)
         if (len(clique) > len(max_clique)):
             max_clique = clique
