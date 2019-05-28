@@ -13,7 +13,7 @@ class Triangles():
         self.current_list = 0
         self.current_place = 0
 
-    def get_t_n(self):
+    def get_t_n(self): # TODO Invert order
         while self.current_place >= len(self.T[self.current_list]):
             self.current_list += 1
             self.current_place = 0
@@ -25,9 +25,11 @@ class Triangles():
         return self.current_list, next_neighbor
         
 
-def compute_triangles(node, graph):
+def compute_triangles(node, father, graph):
     T = Triangles()
     for n in graph.neighbors(node):
+        if n == father:
+            continue
         edges = graph.degree(n)
         t = edges - 1 # Hmmm, no estoy seguro de que estos sean los triangulos
         T.add(n, t)
@@ -43,8 +45,9 @@ def verify_clique(node, graph):
 
 def explore (node, father, _graph):
     graph = _graph.subgraph(list(_graph.neighbors(node)).append(node)) 
+    print(node)
 
-    triangles = compute_triangles (node, graph)
+    triangles = compute_triangles (node, father, graph)
     clique = verify_clique (node, graph)
     k_triangles, next_neighbor = triangles.get_t_n()
     while k_triangles > len(clique) or next_neighbor != None:
