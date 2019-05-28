@@ -14,15 +14,11 @@ class Triangles():
         self.current_place = 0
 
     def get_t_n(self):
-        print(self.T)
         while self.current_place >= len(self.T[self.current_list]):
             self.current_list += 1
             self.current_place = 0
         if self.current_list > len(self.T):
             return None, None
-
-        print(self.current_list)
-        print(self.current_place)
 
         next_neighbor = self.T[self.current_list][self.current_place]
         self.current_place +=1
@@ -47,7 +43,7 @@ def verify_clique(node, graph):
 
 def explore (node, father, _graph):
     graph = _graph.subgraph(list(_graph.neighbors(node)).append(node)) 
-    print(node)
+
     triangles = compute_triangles (node, graph)
     clique = verify_clique (node, graph)
     k_triangles, next_neighbor = triangles.get_t_n()
@@ -56,8 +52,8 @@ def explore (node, father, _graph):
         k_triangles, next_neighbor = triangles.get_t_n()
         return clique
 
-def main (graph):
-    # graph := compute_2-core (graph)   # esto es una optimizacion 
+def main(graph):
+    # graph = nx(graph, 2)   # esto es una optimizacion 
     max_clique = set()
     for node in graph:
         # k_triangles, next_neighbor = triangles.get_t_n()
