@@ -43,21 +43,20 @@ def verify_clique(graph):
     clique = []
     d = len(graph.nodes())
     clique_edges = d * (d - 1) / 2
-    print len(graph.edges()), clique_edges
     return len(graph.edges()) == clique_edges
 
 def explore (node, _graph, max_already_found_clique, already_accounted_nodes):
-    print('Original')
     if verify_clique(_graph):
         return list(_graph.nodes())
 
-    subgraph = NX.Graph(_graph.subgraph(_graph.neighbors(node)))
-    if verify_clique(subgraph): # Why is this necessary?
-        print('Second')
+    subgraph_freezed = _graph.subgraph(_graph.neighbors(node))
+    if verify_clique(subgraph_freezed):
 
-        clique = list(subgraph.nodes())
+        clique = list(subgraph_freezed.nodes())
         clique.append(node)
         return clique
+    subgraph = NX.Graph(subgraph_freezed)
+
     triangles, edges = compute_triangles (subgraph)
     clique = []
     max_expected_clique_size, next_neighbor = triangles.get_t_n()
