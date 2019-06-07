@@ -2,8 +2,6 @@ import networkx as NX
 import time
 class Triangles():
     def __init__(self):
-        self.current_list = 0
-        self.current_place = 0
         self.T = []
 
     def add(self, node, triangles):
@@ -14,19 +12,21 @@ class Triangles():
         self.current_list = len(self.T) - 1
         self.current_place = 0
 
-    def get_t_n(self):
-        while self.current_list >= 0 and self.current_place >= len(self.T[self.current_list]):
-            self.current_list -= 1
-            self.current_place = 0
+    def get_t_n_iterator(self):
+        self.current_list = len(self.T) - 1
+        self.current_place = 0
+        while self.current_list >= 0:
+            if self.current_place >= len(self.T[self.current_list]):
+                self.current_list -= 1
+                self.current_place = 0
+                continue
 
+            next_neighbor = self.T[self.current_list][self.current_place]
+            self.current_place +=1
+            triangles_belonging = self.current_list + 1 
+            yield triangles_belonging, next_neighbor
 
-        if self.current_list < 0:
-            return None, None
-
-        next_neighbor = self.T[self.current_list][self.current_place]
-        self.current_place +=1
-        triangles_belonging = self.current_list + 1 # +2
-        return triangles_belonging, next_neighbor
+        
     
 
 def compute_triangles(graph):
@@ -50,25 +50,26 @@ def explore (node, _graph, max_already_found_clique, already_accounted_nodes):
         return list(_graph.nodes())
 
     subgraph_freezed = _graph.subgraph(_graph.neighbors(node))
+
     if verify_clique(subgraph_freezed):
 
         clique = list(subgraph_freezed.nodes())
         clique.append(node)
         return clique
     subgraph = NX.Graph(subgraph_freezed)
-
+    
     triangles, edges = compute_triangles (subgraph)
     clique = []
-    max_expected_clique_size, next_neighbor = triangles.get_t_n()
+    for max_expected_clique_size, next_neighbor in triangles.get_t_n_iterator():
+        if subgraph is None:
+            clique.append(node)
 
-    while subgraph is not None and next_neighbor is not None and max_expected_clique_size + already_accounted_nodes > max_already_found_clique:
+            return clique
         new_clique = explore (next_neighbor, subgraph, max_already_found_clique, already_accounted_nodes + 1)
         if new_clique is not len(new_clique) > max_already_found_clique:
             clique = new_clique
             max_already_found_clique = len(clique)
         subgraph = subgraph.remove_node(next_neighbor) # Biggest clique has already been found for next_neighbor, if bigger is found it will not include next_neighbor
-
-        max_expected_clique_size, next_neighbor = triangles.get_t_n()
     clique.append(node)
     return clique
 
