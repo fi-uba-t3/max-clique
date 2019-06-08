@@ -8,9 +8,6 @@ class Triangles():
         while len(self.T) <= triangles + 1:
             self.T.append([])
         self.T[triangles].append(node)
-        # Restart , necessary?
-        self.current_list = len(self.T) - 1
-        self.current_place = 0
 
     def get_t_n_iterator(self):
         self.current_list = len(self.T) - 1
@@ -61,14 +58,16 @@ def explore (node, _graph, max_already_found_clique, already_accounted_nodes):
     triangles, edges = compute_triangles (subgraph)
     clique = []
     for max_expected_clique_size, next_neighbor in triangles.get_t_n_iterator():
+        if max_expected_clique_size + already_accounted_nodes <= max_already_found_clique:
+            break
         if subgraph is None:
             clique.append(node)
 
             return clique
         new_clique = explore (next_neighbor, subgraph, max_already_found_clique, already_accounted_nodes + 1)
-        if new_clique is not len(new_clique) > max_already_found_clique:
+        if len(new_clique) + already_accounted_nodes > max_already_found_clique:
             clique = new_clique
-            max_already_found_clique = len(clique)
+            max_already_found_clique = len(clique) + already_accounted_nodes
         subgraph = subgraph.remove_node(next_neighbor) # Biggest clique has already been found for next_neighbor, if bigger is found it will not include next_neighbor
     clique.append(node)
     return clique
@@ -88,7 +87,7 @@ def main(graph):
 
         if len(max_clique) > graph.degree(max_degree_node): # nodes_left_to_visit, se puede hacer algo? No, porque los que ya visitamos, los sacamos; entonces siempre nodes_left_to_visit + degree_ahora >= degree_original; si pruebo probaria con total - nodes_left_to_visit <= max_clique =>??
             break
-        new_clique = explore (max_degree_node, graph, len(max_clique), 0)
+        new_clique = explore (max_degree_node, graph, len(max_clique), 1)
         graph.remove_node(max_degree_node)
 
         # Explore devuelve el clique mas grande al que pertenece el nodo;
