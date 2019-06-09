@@ -10,17 +10,17 @@ class Triangles():
         self.T[triangles].append(node)
 
     def get_t_n_iterator(self):
-        self.current_list = len(self.T) - 1
-        self.current_place = 0
-        while self.current_list >= 0:
-            if self.current_place >= len(self.T[self.current_list]):
-                self.current_list -= 1
-                self.current_place = 0
+        current_list = len(self.T) - 1
+        current_place = 0
+        while current_list >= 0:
+            if current_place >= len(self.T[current_list]):
+                current_list -= 1
+                current_place = 0
                 continue
 
-            next_neighbor = self.T[self.current_list][self.current_place]
-            self.current_place +=1
-            triangles_belonging = self.current_list + 1 
+            next_neighbor = self.T[current_list][current_place]
+            current_place +=1
+            triangles_belonging = current_list + 1 
             yield triangles_belonging, next_neighbor
 
         
@@ -37,44 +37,43 @@ def compute_triangles(graph):
     return T, total_edges
 
 def verify_clique(graph):
-    clique = []
     d = len(graph.nodes())
     clique_edges = d * (d - 1) / 2
     return len(graph.edges()) == clique_edges
 
+# Returns the max clique size if it is bigger max_already_found_clique 
+# already_accounted_nodes no cuenta node
 def explore (node, _graph, max_already_found_clique, already_accounted_nodes):
     if verify_clique(_graph):
-        return list(_graph.nodes())
+        return len(_graph.nodes())
 
     subgraph_freezed = _graph.subgraph(_graph.neighbors(node))
 
     if verify_clique(subgraph_freezed):
+        clique_size = len(subgraph_freezed.nodes())        
+        return clique_size + 1
 
-        clique = list(subgraph_freezed.nodes())
-        clique.append(node)
-        return clique
     subgraph = NX.Graph(subgraph_freezed)
     
     triangles, edges = compute_triangles (subgraph)
-    clique = []
+    clique_size = 0
     for max_expected_clique_size, next_neighbor in triangles.get_t_n_iterator():
         if max_expected_clique_size + already_accounted_nodes <= max_already_found_clique:
             break
         if subgraph is None:
-            clique.append(node)
-
-            return clique
-        new_clique = explore (next_neighbor, subgraph, max_already_found_clique, already_accounted_nodes + 1)
-        if len(new_clique) + already_accounted_nodes > max_already_found_clique:
-            clique = new_clique
-            max_already_found_clique = len(clique) + already_accounted_nodes
-        subgraph = subgraph.remove_node(next_neighbor) # Biggest clique has already been found for next_neighbor, if bigger is found it will not include next_neighbor
-    clique.append(node)
-    return clique
+            return clique_size + 1
+        new_clique_size = explore (next_neighbor, subgraph, max_already_found_clique, already_accounted_nodes + 1)
+        if new_clique_size + already_accounted_nodes > max_already_found_clique:
+            clique_size = new_clique_size
+            max_already_found_clique = new_clique_size + already_accounted_nodes
+        subgraph = subgraph.remove_node(next_neighbor) 
+        # Biggest clique has already been found for next_neighbor, if bigger is found it will not include next_neighbor
+    
+    return clique_size + 1
 
 def main(graph):
     graph = graph.copy()
-    max_clique = []
+    max_clique = 0
     while len(graph.nodes()):
         max_degree = -1
         for node in graph.nodes():
@@ -85,22 +84,22 @@ def main(graph):
 
 
 
-        if len(max_clique) > graph.degree(max_degree_node): # nodes_left_to_visit, se puede hacer algo? No, porque los que ya visitamos, los sacamos; entonces siempre nodes_left_to_visit + degree_ahora >= degree_original; si pruebo probaria con total - nodes_left_to_visit <= max_clique =>??
+        if max_clique > graph.degree(max_degree_node): # nodes_left_to_visit, se puede hacer algo? No, porque los que ya visitamos, los sacamos; entonces siempre nodes_left_to_visit + degree_ahora >= degree_original; si pruebo probaria con total - nodes_left_to_visit <= max_clique =>??
             break
-        new_clique = explore (max_degree_node, graph, len(max_clique), 1)
+        new_clique = explore (max_degree_node, graph, max_clique, 0)
         graph.remove_node(max_degree_node)
 
         # Explore devuelve el clique mas grande al que pertenece el nodo;
         # por lo tanto el clique que encontremos no tendra al nodo, si es mas grande
 
-        if len(new_clique) > len(max_clique):
+        if new_clique > max_clique:
             max_clique = new_clique
-            graph = NX.k_core(graph, len(max_clique))
+            graph = NX.k_core(graph, max_clique)
     return max_clique
 
 def calc_measure_and_compare(G, msg):
     start = time.time()
-    result = len(main(G))
+    result = main(G)
     end = time.time()
 
     start2 = time.time()
@@ -144,6 +143,7 @@ if __name__ == '__main__':
     calc_measure_and_compare(NX.gnp_random_graph(50, 0.5), 'GNP; N=50, P=0.5')
     calc_measure_and_compare(NX.gnp_random_graph(20, 0.95), 'GNP; N=20, P=0.95')
     calc_measure_and_compare(NX.gnp_random_graph(50, 0.99), 'GNP; N=50, P=0.99')
+    calc_measure_and_compare(NX.gnp_random_graph(50, 0.69), 'GNP; N=50, P=0.99')
     # calc_measure_and_compare(NX.circulant_graph(n, offsets)), 'Cycle graph 200')
     # calc_measure_and_compare(NX.cycle_graph(n)), 'Cycle graph 200')
     # calc_measure_and_compare(NX.dorogovtsev_goltsev_mendes_graph(n)), 'Cycle graph 200')
