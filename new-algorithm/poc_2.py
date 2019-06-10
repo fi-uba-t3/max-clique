@@ -9,8 +9,33 @@ class Triangles():
             self.T.append([])
         self.T[triangles].append(node)
 
+    def get_max_clique_size(self, degree):
+        ## Lists of greater degree should be empty by now
+        max_clique_size = degree
+
+        for amount_of_nodes in self.nodes_per_degree:
+            if amount_of_nodes >= max_clique_size:
+                break
+            max_clique_size -= 1
+
+
+        self.nodes_per_degree = map(lambda x: x - 1, self.nodes_per_degree)
+        ## Remove empty degrees list
+        while self.nodes_per_degree[0] == 0:
+            self.nodes_per_degree.pop()
+        return max_clique_size
+        
     def get_t_n_iterator(self):
+        self.nodes_per_degree = []
+        self.T.reverse()
+        previous_value = 0
+        for list_of_nodes in self.T:
+
+            self.nodes_per_degree.append(len(list_of_nodes) + previous_value)
+            previous_value = self.nodes_per_degree[-1]
+        self.T.reverse()
         current_list = len(self.T) - 1
+
         current_place = 0
         while current_list >= 0:
             if current_place >= len(self.T[current_list]):
@@ -21,7 +46,9 @@ class Triangles():
             next_neighbor = self.T[current_list][current_place]
             current_place +=1
             triangles_belonging = current_list + 1 
-            yield triangles_belonging, next_neighbor
+            a = self.get_max_clique_size(current_list)
+            print(a)
+            yield self.get_max_clique_size(current_list), triangles_belonging
 
         
     
@@ -143,7 +170,7 @@ if __name__ == '__main__':
     calc_measure_and_compare(NX.gnp_random_graph(50, 0.5), 'GNP; N=50, P=0.5')
     calc_measure_and_compare(NX.gnp_random_graph(20, 0.95), 'GNP; N=20, P=0.95')
     calc_measure_and_compare(NX.gnp_random_graph(50, 0.99), 'GNP; N=50, P=0.99')
-    calc_measure_and_compare(NX.gnp_random_graph(50, 0.69), 'GNP; N=50, P=0.99')
+    calc_measure_and_compare(NX.gnp_random_graph(50, 0.69), 'GNP; N=50, P=0.69')
     # calc_measure_and_compare(NX.circulant_graph(n, offsets)), 'Cycle graph 200')
     # calc_measure_and_compare(NX.cycle_graph(n)), 'Cycle graph 200')
     # calc_measure_and_compare(NX.dorogovtsev_goltsev_mendes_graph(n)), 'Cycle graph 200')
