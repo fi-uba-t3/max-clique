@@ -11,17 +11,20 @@ class Triangles():
 
     def get_max_clique_size(self, degree):
         ## Lists of greater degree should be empty by now
-        max_clique_size = degree
+        ## 2 is because of the node and the node checking 
+        max_clique_size = degree + 2
 
         for amount_of_nodes in self.nodes_per_degree:
             if amount_of_nodes >= max_clique_size:
                 break
             max_clique_size -= 1
 
+        if len(self.nodes_per_degree) == 0:
+            return 0
 
         self.nodes_per_degree = map(lambda x: x - 1, self.nodes_per_degree)
         ## Remove empty degrees list
-        while self.nodes_per_degree[0] == 0:
+        while self.nodes_per_degree and self.nodes_per_degree[0] == 0:
             self.nodes_per_degree.pop()
         return max_clique_size
         
@@ -46,12 +49,7 @@ class Triangles():
             next_neighbor = self.T[current_list][current_place]
             current_place +=1
             triangles_belonging = current_list + 1 
-            a = self.get_max_clique_size(current_list)
-            print(a)
-            yield self.get_max_clique_size(current_list), triangles_belonging
-
-        
-    
+            yield self.get_max_clique_size(current_list), next_neighbor    
 
 def compute_triangles(graph):
     T = Triangles()
