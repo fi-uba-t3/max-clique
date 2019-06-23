@@ -13,7 +13,7 @@ class Triangles():
         max_clique_size = degree + 2
 
         for amount_of_nodes in self.nodes_per_degree:
-            if amount_of_nodes + 1 >= max_clique_size:
+            if amount_of_nodes + 1 >= max_clique_size: # +1 because of the main_node
                 break
             max_clique_size -= 1
 

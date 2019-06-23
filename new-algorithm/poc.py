@@ -2,14 +2,16 @@ import networkx as NX
 from triangles import Triangles
 import time
 
-def compute_triangles(graph):
+def compute_triangles(graph, main_node):
     T = Triangles()
     degree_sum = 0
     for node in graph.nodes():
+        
         degree = graph.degree(node)
         triangles = degree - 1 # Agregar de nuevo el nodo
         degree_sum += degree
-        T.add(node, triangles)
+        if node != main_node:
+            T.add(node, triangles)
     return T, degree_sum 
 
 def verify_clique(graph, node, degree_sum):
@@ -19,9 +21,9 @@ def verify_clique(graph, node, degree_sum):
 
 # Returns the max clique size if it is bigger max_already_found_clique 
 # already_accounted_nodes no cuenta node
-def explore (node, _graph, visited):
+def explore (node, _graph, visited, max_already_found_clique_size):
     subgraph_freezed = _graph.subgraph(list(_graph.neighbors(node)) + [node])
-    triangles, degree_sum = compute_triangles (subgraph_freezed)
+    triangles, degree_sum = compute_triangles (subgraph_freezed, node)
 
     if verify_clique(subgraph_freezed, node, degree_sum):
         return list(subgraph_freezed.nodes())        
@@ -34,9 +36,12 @@ def explore (node, _graph, visited):
         if not visited[next_neighbor]:
             if max_expected_clique_size <= len(clique):
                 break
-            new_clique = explore (next_neighbor, subgraph, visited)
-            if len(new_clique) > len(clique):
+            new_clique = explore (next_neighbor, subgraph, visited, max_already_found_clique_size)
+            if len(clique) < len(new_clique):
                 clique = new_clique
+                if max_already_found_clique_size < len(new_clique):
+                    max_already_found_clique_size = len(new_clique)
+                
 
     visited[node] = False
     return clique
@@ -48,7 +53,7 @@ def main(graph):
     max_clique = []
     for node in graph.nodes():
         if len(max_clique) < graph.degree(node)  + 1:
-            new_clique = explore (node, graph, visited)
+            new_clique = explore (node, graph, visited, len(max_clique))
             if len(max_clique) < len(new_clique):
                 max_clique = new_clique
     return max_clique
