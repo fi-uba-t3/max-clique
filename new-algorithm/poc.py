@@ -6,10 +6,8 @@ def compute_triangles(graph):
     T = Triangles()
     degree_sum = 0
     for node in graph.nodes():
-        print graph.edges()
         degree = graph.degree(node)
         triangles = degree - 1 # Agregar de nuevo el nodo
-        print(triangles)
         degree_sum += degree
         T.add(node, triangles)
     return T, degree_sum 
@@ -22,9 +20,6 @@ def verify_clique(graph, node, degree_sum):
 # Returns the max clique size if it is bigger max_already_found_clique 
 # already_accounted_nodes no cuenta node
 def explore (node, _graph, visited):
-    print(node)
-    print(_graph.nodes())
-    print(_graph.edges())
     subgraph_freezed = _graph.subgraph(list(_graph.neighbors(node)) + [node])
     triangles, degree_sum = compute_triangles (subgraph_freezed)
 
@@ -36,9 +31,7 @@ def explore (node, _graph, visited):
     
     clique = []
     for max_expected_clique_size, next_neighbor in triangles.get_t_n_iterator():
-        print ('m', max_expected_clique_size)
         if not visited[next_neighbor]:
-            print('m', max_expected_clique_size)
             if max_expected_clique_size <= len(clique):
                 break
             new_clique = explore (next_neighbor, subgraph, visited)
@@ -81,30 +74,34 @@ def calc_measure_and_compare(G, msg):
         )
 
 if __name__ == '__main__':
-    # calc_measure_and_compare(NX.cycle_graph(20), 'Cycle graph 20')
-    # calc_measure_and_compare(NX.cycle_graph(200), 'Cycle graph 200')
-    # calc_measure_and_compare(NX.cycle_graph(10), 'Cycle graph 10')
-    # calc_measure_and_compare(NX.cycle_graph(2), 'Cycle graph 2')
-    # calc_measure_and_compare(NX.cycle_graph(3), 'Cycle graph 3')
-    # calc_measure_and_compare(NX.complete_graph(2), 'Complete graph 2')
-    # calc_measure_and_compare(NX.complete_graph(200), 'Complete graph 200')
-    # calc_measure_and_compare(NX.balanced_tree(2, 10), 'Balanced binary tree-Height 10')
-    # calc_measure_and_compare(NX.balanced_tree(3, 8), 'Balanced triary tree-Height 8')
-    # calc_measure_and_compare(NX.balanced_tree(4, 5), 'Balanced 4-ary tree-Height 5')
-    # calc_measure_and_compare(NX.balanced_tree(5, 4), 'Balanced 5-ary tree-Height 4')
-    # calc_measure_and_compare(NX.balanced_tree(2, 15), 'Balanced binary tree-Height 15')
-    # calc_measure_and_compare(NX.barbell_graph(10, 2), 'Barbell graph 10-2')
-    # calc_measure_and_compare(NX.barbell_graph(5, 5), 'Barbell graph 5-5')
-    # calc_measure_and_compare(NX.barbell_graph(20, 10), 'Barbell graph 20-10')
+    calc_measure_and_compare(NX.cycle_graph(20), 'Cycle graph 20')
+    calc_measure_and_compare(NX.cycle_graph(200), 'Cycle graph 200')
+    calc_measure_and_compare(NX.cycle_graph(10), 'Cycle graph 10')
+    calc_measure_and_compare(NX.cycle_graph(2), 'Cycle graph 2')
+    calc_measure_and_compare(NX.cycle_graph(3), 'Cycle graph 3')
+    calc_measure_and_compare(NX.complete_graph(2), 'Complete graph 2')
+    calc_measure_and_compare(NX.complete_graph(200), 'Complete graph 200')
+    calc_measure_and_compare(NX.balanced_tree(2, 10), 'Balanced binary tree-Height 10')
+    calc_measure_and_compare(NX.balanced_tree(3, 8), 'Balanced triary tree-Height 8')
+    calc_measure_and_compare(NX.balanced_tree(4, 5), 'Balanced 4-ary tree-Height 5')
+    calc_measure_and_compare(NX.balanced_tree(5, 4), 'Balanced 5-ary tree-Height 4')
+    calc_measure_and_compare(NX.balanced_tree(2, 15), 'Balanced binary tree-Height 15')
+    calc_measure_and_compare(NX.barbell_graph(10, 2), 'Barbell graph 10-2')
+    calc_measure_and_compare(NX.barbell_graph(5, 5), 'Barbell graph 5-5')
+    calc_measure_and_compare(NX.barbell_graph(20, 10), 'Barbell graph 20-10')
     calc_measure_and_compare(NX.complete_multipartite_graph([1,1]), 'K-Multipartite 1-1')
-    # calc_measure_and_compare(NX.complete_multipartite_graph([10,5]), 'K-Multipartite 10-5')
-    # calc_measure_and_compare(NX.complete_multipartite_graph([10,10]), 'K-Multipartite 10-10')
-    # calc_measure_and_compare(NX.complete_multipartite_graph([5,5,5,5,5]), 'K-Multipartite 5-5-5-5-5')
-    # calc_measure_and_compare(NX.circular_ladder_graph(20), 'Circular ladder graph 20')
-    # calc_measure_and_compare(NX.circular_ladder_graph(10), 'Circular ladder graph 10')
-    # calc_measure_and_compare(NX.circular_ladder_graph(5), 'Circular ladder graph 5')
-    # calc_measure_and_compare(NX.gnp_random_graph(50, 0.5), 'GNP; N=50, P=0.5')
-    # calc_measure_and_compare(NX.gnp_random_graph(20, 0.95), 'GNP; N=20, P=0.95')
+    calc_measure_and_compare(NX.complete_multipartite_graph([10,5]), 'K-Multipartite 10-5')
+    calc_measure_and_compare(NX.complete_multipartite_graph([10,10]), 'K-Multipartite 10-10')
+    calc_measure_and_compare(NX.complete_multipartite_graph([5,5,5,5,5]), 'K-Multipartite 5-5-5-5-5')
+    calc_measure_and_compare(NX.circular_ladder_graph(20), 'Circular ladder graph 20')
+    calc_measure_and_compare(NX.circular_ladder_graph(10), 'Circular ladder graph 10')
+    calc_measure_and_compare(NX.circular_ladder_graph(5), 'Circular ladder graph 5')
+    calc_measure_and_compare(NX.gnp_random_graph(50, 0.5), 'GNP; N=50, P=0.5')
+    calc_measure_and_compare(NX.gnp_random_graph(50, 0.5), 'GNP; N=50, P=0.5')
+    calc_measure_and_compare(NX.gnp_random_graph(50, 0.5), 'GNP; N=50, P=0.5')
+    calc_measure_and_compare(NX.gnp_random_graph(50, 0.5), 'GNP; N=50, P=0.5')
+    calc_measure_and_compare(NX.gnp_random_graph(50, 0.5), 'GNP; N=50, P=0.5')
+    calc_measure_and_compare(NX.gnp_random_graph(20, 0.95), 'GNP; N=20, P=0.95')
     # calc_measure_and_compare(NX.gnp_random_graph(50, 0.99), 'GNP; N=50, P=0.99')
     # calc_measure_and_compare(NX.gnp_random_graph(50, 0.69), 'GNP; N=50, P=0.69')
     # calc_measure_and_compare(NX.circulant_graph(n, offsets)), 'Cycle graph 200')
