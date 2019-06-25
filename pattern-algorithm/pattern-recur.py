@@ -1,7 +1,7 @@
 import time
 import networkx as NX
 
-def explore(G, U, C, low, max_clique, level):
+def explore(G, U, C, max_clique, level):
 
     if len(U) == 0 and len(C) > max_clique:
         return
@@ -23,11 +23,10 @@ def explore(G, U, C, low, max_clique, level):
             if G.degree(wj) >= max_clique:
                 Np.add(wj)
 
-        explore(G, Uc.intersection(Np), C, low, max_clique, level + 1)
+        explore(G, Uc.intersection(Np), C, max_clique, level + 1)
 
 def max_clique(G):
 
-    low = 2
     max_clique = 2
 
     nodes = G.nodes()
@@ -36,7 +35,7 @@ def max_clique(G):
 
     for v in range(len(nodes)):
         
-        if G.degree(v) >= max_clique:
+        if G.degree(nodes[v]) >= max_clique:
             
             U = set()
             C = set()
@@ -50,7 +49,7 @@ def max_clique(G):
                 if j > v and G.degree(nodes[j]) >= max_clique:
                     U.add(nodes[j])
             
-            explore(G, U, C, low, max_clique, 1)
+            explore(G, U, C, max_clique, 1)
             
             if len(C) > max_clique:
                 max_clique = len(C)
@@ -60,7 +59,7 @@ def max_clique(G):
 
 def main():
 
-    G = NX.complete_graph(6)
+    G = NX.complete_graph(10)
     
     start = time.time()
     clique = max_clique(G)
