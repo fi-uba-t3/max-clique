@@ -1,3 +1,4 @@
+import sys
 import time
 import networkx as NX
 
@@ -36,7 +37,9 @@ def max_clique(G):
     for v in range(len(nodes)):
         
         if G.degree(nodes[v]) >= max_clique:
-            
+           
+            print("node: {}".format(nodes[v]))
+
             U = set()
             C = set()
 
@@ -55,12 +58,12 @@ def max_clique(G):
                 max_clique = len(C)
                 res = C.copy()
 
+        print("max_clique: {}".format(max_clique))
+
     return res
 
-def main():
+def test_graph(G):
 
-    G = NX.complete_graph(10)
-    
     start = time.time()
     clique = max_clique(G)
     end = time.time()
@@ -76,6 +79,33 @@ def main():
     delta_nx = end - start
 
     print("Time - Own: {}, NX: {}".format(delta_own, delta_nx))
+
+def load_graph(path):
+
+    edges = []
+
+    with open(path) as f:
+        lines = f.readlines()
+
+    edges = list(map(lambda x: tuple(x.strip("\n").split(" ")), lines))
+    edges = list(map(lambda y: (int(y[0]), int(y[1])), edges))
+
+    g = NX.Graph()
+    g.add_edges_from(edges)
+
+    return g
+
+def main():
+
+    # Tests
+    if len(sys.argv) <= 1:
+        g = NX.complete_graph(10)
+        test_graph(g)
+        return
+    
+    # Load a graph
+    g = load_graph(sys.argv[1])
+    test_graph(g)
 
 if __name__ == "__main__":
     main()
