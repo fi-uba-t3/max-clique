@@ -56,9 +56,9 @@ class ResultTests(unittest.TestCase):
     def test_result_circular_ladder_graph_5(self):
         assert(calc_and_compare(NX.circular_ladder_graph(5)))
     def test_result_gnp_50_0_5(self):
-        assert(calc_and_compare(NX.gnp_random_graph(50, 0.5)))
+        assert(calc_and_compare(NX.gnp_random_graph(50, 0.5), default_seed))
     def test_result_gnp_50_0_95(self):
-        assert(calc_and_compare(NX.gnp_random_graph(20, 0.95)))
+        assert(calc_and_compare(NX.gnp_random_graph(20, 0.95), default_seed))
     def test_result_empty_graph(self):
         assert(calc_and_compare(NX.empty_graph()))
     def test_result_full_5ary_tree_4_tall(self):
