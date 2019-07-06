@@ -19,10 +19,10 @@ def explore(wid, G, U, C, max_clique, level):
 
         if level + len(U) <= max_clique.value:
             return
-
+        
+        v = U.pop()
         Uc = U.copy()
         
-        v = Uc.pop()
         C.add(v)
 
         Np = set()
@@ -82,7 +82,7 @@ def test_graph(G, work_num):
     for w in range(work_num):
         queues.append(Queue())
 
-    start = time.time()
+    start = time.strptime(time.ctime())
 
     nodes = G.nodes()
 
@@ -130,7 +130,12 @@ def test_graph(G, work_num):
 
     print("Result: {}".format(maxclique))
     
-    end = time.time()
+    end = time.strptime(time.ctime())
+
+    print("Delta time: hour: {}, min: {}, sec: {}".format(
+                                    end.tm_hour - start.tm_hour,
+                                    end.tm_min - start.tm_min,
+                                    end.tm_sec - start.tm_sec))
     
 def load_graph(path):
 
