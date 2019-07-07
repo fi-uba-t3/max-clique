@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import networkx as NX
@@ -57,21 +58,14 @@ def calc_max_clique(wid, q_in, q_out, val, G):
         with val.get_lock():
             U = set(filter(lambda x: G.degree(x) >= val.value, U))
 
-        print("wid: {}, U: {}, C: {}".format(wid, U, C))
-        
         explore(wid, G, U, C, val, 1)
-
-        print("wid: {}, C: {}".format(wid, C))
 
         with val.get_lock():
             if len(C) >= val.value:
                 val.value = len(C)
                 res = C.copy()
 
-        print("wid: {}, res: {}".format(wid, res))
-        print("wid: {}, max_clique: {}".format(wid, val.value))
-    
-    q_out.put(res)
+    q_out.put((res, wid))
 
 def test_graph(G, work_num):
     
@@ -123,14 +117,14 @@ def test_graph(G, work_num):
 
     while not outq.empty():
         
-        clique = outq.get()
+        clique, wid = outq.get()
 
-        print(clique)
+        print("wid: {}, clique: {}".format(wid, clique))
 
         if len(clique) > len(maxclique):
             maxclique = clique
 
-    print("Result: {}".format(maxclique))
+    print("Result: {}, size: {}".format(maxclique, len(maxclique)))
     
     end = time.time()
 
@@ -176,7 +170,7 @@ if __name__ == "__main__":
     
     parser.add_argument(
             '--workers',
-            default=2,
+            default=os.cpu_count(),
             type=int,
             help='MCP workers'
     )
