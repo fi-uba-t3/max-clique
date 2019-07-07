@@ -91,6 +91,11 @@ def test_graph(G, work_num):
 
     start = time.time()
     
+    # Order nodes by the its degree
+    nodes = list(map(lambda x: (x, G.degree(x)), nodes))
+    nodes = sorted(nodes, key=lambda x: x[1], reverse=True)
+    nodes = list(map(lambda x: x[0], nodes))
+
     for v in range(len(nodes)):
         queues[v % work_num].put(nodes[v])
 
