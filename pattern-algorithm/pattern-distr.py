@@ -2,7 +2,9 @@ import sys
 import time
 import networkx as NX
 
+from datetime import timedelta
 from multiprocessing import Process, Queue, Value
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 def explore(wid, G, U, C, max_clique, level):
 
@@ -82,7 +84,7 @@ def test_graph(G, work_num):
     for w in range(work_num):
         queues.append(Queue())
 
-    start = time.strptime(time.ctime())
+    start = time.time()
 
     nodes = G.nodes()
 
@@ -130,12 +132,15 @@ def test_graph(G, work_num):
 
     print("Result: {}".format(maxclique))
     
-    end = time.strptime(time.ctime())
+    end = time.time()
+
+    d = end - start
+    dt = time.strptime(str(timedelta(seconds=d)).split(".")[0], "%H:%M:%S")
 
     print("Delta time: hour: {}, min: {}, sec: {}".format(
-                                    end.tm_hour - start.tm_hour,
-                                    end.tm_min - start.tm_min,
-                                    end.tm_sec - start.tm_sec))
+                                        dt.tm_hour,
+                                        dt.tm_min,
+                                        dt.tm_sec))
     
 def load_graph(path):
 
@@ -152,21 +157,36 @@ def load_graph(path):
 
     return g
 
-def main():
+def main(workers, graph):
 
-    WORKERS = 6
-
-    # Tests
-    if len(sys.argv) <= 1:
-        V = 10
-        g = NX.complete_graph(V)
-        test_graph(g, 2)
+    if graph is None:
+        g = NX.complete_graph(10)
+        test_graph(g, workers)
         return
     
     # Load a graph
-    g = load_graph(sys.argv[1])
-    test_graph(g, WORKERS)
+    g = load_graph(graph)
+    test_graph(g, workers)
 
 if __name__ == "__main__":
-    main()
+
+    parser = ArgumentParser(
+                description='MCP',
+                formatter_class=ArgumentDefaultsHelpFormatter)
+    
+    parser.add_argument(
+            '--workers',
+            default=2,
+            type=int,
+            help='MCP workers'
+    )
+    parser.add_argument(
+            '--graph',
+            default=None,
+            help='MCP graph data'
+    )
+
+    args = parser.parse_args()
+
+    main(args.workers, args.graph)
 
