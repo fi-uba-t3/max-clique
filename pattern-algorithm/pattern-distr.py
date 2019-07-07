@@ -43,20 +43,27 @@ def calc_max_clique(wid, q_in, q_out, val, G):
     res = []
 
     while not quit:
-    
+
         item = q_in.get()
 
         if item == None:
             quit = True
             continue
 
-        U, C = item
+        U = set()
+        C = set()
 
-        # check if the vertexes
-        # verify the clique condition
+        if G.degree(item) >= val.value:
 
-        with val.get_lock():
-            U = set(filter(lambda x: G.degree(x) >= val.value, U))
+            C.add(item)
+
+            ngbs = G.neighbors(item)
+
+            # check if the vertexes
+            # verify the clique condition
+            for neighbor in ngbs:
+                if G.degree(neighbor) >= val.value:
+                    U.add(neighbor)
 
         explore(wid, G, U, C, val, 1)
 
@@ -78,29 +85,14 @@ def test_graph(G, work_num):
     for w in range(work_num):
         queues.append(Queue())
 
-    start = time.time()
-
     nodes = G.nodes()
 
     print("nodes: {}".format(nodes))
 
+    start = time.time()
+    
     for v in range(len(nodes)):
-        
-        if G.degree(nodes[v]) >= val.value:
-           
-            U = set()
-            C = set()
-
-            C.add(nodes[v])
-            res = []
-
-            ngbs = G.neighbors(nodes[v])
-            
-            for j in range(len(ngbs) + 1):
-                if j > v and G.degree(nodes[j]) >= val.value:
-                    U.add(nodes[j])
-
-            queues[v % work_num].put((U.copy(), C.copy()))
+        queues[v % work_num].put(nodes[v])
 
     for w in range(work_num):
         p = Process(target=calc_max_clique, args=(w, queues[w], outq, val, G,))
