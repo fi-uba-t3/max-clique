@@ -1,9 +1,8 @@
 PATH_GRAPHS = graphs
 
 generate: 
-	cd $(PATH_GRAPHS)
-	./generate-graphs.py
-	cd ..
+	./$(PATH_GRAPHS)/generate-graphs.py
+	mv *.txt $(PATH_GRAPHS)
 
 clean:
 	rm -rf __pycache__/
