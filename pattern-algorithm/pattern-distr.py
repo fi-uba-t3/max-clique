@@ -20,8 +20,9 @@ def explore(wid, G, U, C, max_clique, level):
 
     while len(U) > 0:
 
-        if level + len(U) <= max_clique.value:
-            return
+        with max_clique.get_lock():
+            if level + len(U) <= max_clique.value:
+                return
         
         v = U.pop()
         Uc = U.copy()
