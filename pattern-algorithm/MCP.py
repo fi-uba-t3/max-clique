@@ -1,7 +1,8 @@
 import time
-from networkx import Graph
 from datetime import timedelta
 from multiprocessing import Process, Queue, Value
+
+from graph import Graph
 
 def explore(wid, G, U, C, max_clique, level):
 
@@ -68,24 +69,10 @@ def calc_max_clique(wid, q_in, q_out, val, G):
 
     q_out.put((res, wid))
 
-def load_graph(path):
-
-    edges = []
-
-    with open(path) as f:
-        lines = f.readlines()
-
-    edges = list(map(lambda x: tuple(x.strip("\n").split(" ")), lines))
-    edges = list(map(lambda y: (int(y[0]), int(y[1])), edges))
-
-    g = Graph()
-    g.add_edges_from(edges)
-
-    return g
-
 def maxclique(graph, work_num):
     
-    G = load_graph(graph)
+    G = Graph()
+    G.load(graph)
 
     workers = []
     queues = []
