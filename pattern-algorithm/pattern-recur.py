@@ -1,42 +1,51 @@
+#!/usr/bin/env python3
+
 import sys
 import time
 import networkx as NX
 
-def explore(G, U, C, max_clique, level):
+MAX_CLIQUE = 2
 
-    if len(U) == 0 and len(C) > max_clique:
+def explore(G, U, C, size):
+
+    global MAX_CLIQUE
+
+    if len(U) == 0:
+        if size > MAX_CLIQUE:
+            MAX_CLIQUE = size
         return
 
     while len(U) > 0:
 
-        if level + len(U) <= len(C):
+        if size + len(U) <= MAX_CLIQUE:
             return
-
+        
+        v = U.pop()
         Uc = U.copy()
         
-        v = Uc.pop()
         C.add(v)
 
         Np = set()
         vngbs = G.neighbors(v)
 
         for wj in vngbs:
-            if G.degree(wj) >= max_clique:
+            if G.degree(wj) >= MAX_CLIQUE:
                 Np.add(wj)
 
-        explore(G, Uc.intersection(Np), C, max_clique, level + 1)
+        explore(G, Uc.intersection(Np), C, size + 1)
 
 def max_clique(G):
 
-    max_clique = 2
-
+    res = []
     nodes = G.nodes()
 
     print("max-clique - nodes: {}".format(nodes))
 
+    global MAX_CLIQUE
+
     for v in range(len(nodes)):
         
-        if G.degree(nodes[v]) >= max_clique:
+        if G.degree(nodes[v]) >= MAX_CLIQUE:
            
             print("node: {}".format(nodes[v]))
 
@@ -44,21 +53,20 @@ def max_clique(G):
             C = set()
 
             C.add(nodes[v])
-            res = []
 
             ngbs = G.neighbors(nodes[v])
             
             for j in range(len(ngbs) + 1):
-                if j > v and G.degree(nodes[j]) >= max_clique:
+                if j > v and G.degree(nodes[j]) >= MAX_CLIQUE:
                     U.add(nodes[j])
             
-            explore(G, U, C, max_clique, 1)
+            explore(G, U, C, 1)
             
-            if len(C) > max_clique:
-                max_clique = len(C)
+            if len(C) >= MAX_CLIQUE:
+                MAX_CLIQUE = len(C)
                 res = C.copy()
 
-        print("max_clique: {}".format(max_clique))
+        print("max_clique: {}".format(MAX_CLIQUE))
 
     return res
 
@@ -68,13 +76,15 @@ def test_graph(G):
     clique = max_clique(G)
     end = time.time()
 
-    print("Result: {}".format(clique))
+    print("Result: {}, size: {}".format(clique, len(clique)))
     
     delta_own = end - start
 
     start = time.time()
-    NX.graph_clique_number(G)
+    nx_clique = NX.graph_clique_number(G)
     end = time.time()
+
+    print("Size NX: {}".format(nx_clique))
 
     delta_nx = end - start
 
