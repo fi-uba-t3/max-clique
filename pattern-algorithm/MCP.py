@@ -83,7 +83,7 @@ def maxclique(graph, work_num):
     
     # Order nodes by the its degree
     nodes = list(map(lambda x: (x, G.degree(x)), nodes))
-    nodes = sorted(nodes, key=lambda x: x[1], reverse=True)
+    nodes = sorted(nodes, key=lambda x: x[1])
     nodes = list(map(lambda x: x[0], nodes))
 
     for v in range(len(nodes)):
