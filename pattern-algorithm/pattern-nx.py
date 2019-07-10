@@ -55,10 +55,17 @@ def test_graph(G):
 
     MCLIQUE = []
 
+    start = time.time()
+
     for clique in cliques(G):
         if len(clique) > len(MCLIQUE):
             MCLIQUE = clique
 
+    end = time.time()
+
+    delta = end - start
+
+    print("Time: {}".format(delta))
     print("Result: {}, size: {}".format(MCLIQUE, len(MCLIQUE)))
 
 def load_graph(path):
