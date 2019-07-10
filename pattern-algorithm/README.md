@@ -2,6 +2,12 @@
 
 Distributed algorithms for NP-complete MCP - Maximum Clique Problem
 
+### Download
+
+```bash
+ $ make download
+```
+
 ### Run
 
 #### Parallel
