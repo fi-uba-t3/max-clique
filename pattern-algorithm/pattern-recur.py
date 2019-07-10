@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
 
+"""
+    Bharath Pattabiraman, Assefaw H. Gebremedhin, Wei-keng Liao, Alok Choudhary
+        
+        "Fast Algorithms for the Maximum Clique Problem on
+            Massive Sparse Graphs"
+        
+        Northwestern University, Evanston, IL 60208
+        Purdue University, West Lafayette, IN 47907
+
+        <https://arxiv.org/abs/1209.5818>
+"""
+
 import sys
 import time
 import networkx as NX
