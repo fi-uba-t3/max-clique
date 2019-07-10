@@ -4,24 +4,22 @@ from multiprocessing import Process, Queue, Value
 
 from graph import Graph
 
-def explore(wid, G, U, C, max_clique, level):
+def explore(wid, G, U, C, max_clique, q_out, size):
 
     if len(U) == 0:
         with max_clique.get_lock():
-            if level > max_clique.value:
-                max_clique.value = level
+            if size > max_clique.value:
+                max_clique.value = size
+                q_out.put((wid, C.copy()))
         return
 
     while len(U) > 0:
 
         with max_clique.get_lock():
-            if level + len(U) <= max_clique.value:
+            if size + len(U) <= max_clique.value:
                 return
         
         v = U.pop()
-        Uc = U.copy()
-        
-        C.add(v)
 
         Np = set()
         vngbs = G.neighbors(v)
@@ -30,12 +28,11 @@ def explore(wid, G, U, C, max_clique, level):
             if G.degree(wj) >= max_clique.value:
                 Np.add(wj)
 
-        explore(wid, G, Uc.intersection(Np), C, max_clique, level + 1)
+        explore(wid, G, U & Np, C | {v}, max_clique, q_out, size + 1)
 
-def calc_max_clique(wid, q_in, q_out, val, G):
+def calc_max_clique(wid, q_in, q_out, max_clique, G):
 
     quit = False
-    res = []
 
     while not quit:
 
@@ -48,7 +45,9 @@ def calc_max_clique(wid, q_in, q_out, val, G):
         U = set()
         C = set()
 
-        if G.degree(item) >= val.value:
+        if G.degree(item) >= max_clique.value:
+
+            print("wid: {}, node: {}".format(wid, item))
 
             C.add(item)
 
@@ -57,17 +56,10 @@ def calc_max_clique(wid, q_in, q_out, val, G):
             # check if the vertexes
             # verify the clique condition
             for neighbor in ngbs:
-                if G.degree(neighbor) >= val.value:
+                if G.degree(neighbor) >= max_clique.value:
                     U.add(neighbor)
 
-        explore(wid, G, U, C, val, 1)
-
-        with val.get_lock():
-            if len(C) >= val.value:
-                val.value = len(C)
-                res = C.copy()
-
-    q_out.put((res, wid))
+            explore(wid, G, U, C, max_clique, q_out, 1)
 
 def maxclique(graph, work_num):
     
@@ -112,7 +104,7 @@ def maxclique(graph, work_num):
 
     while not outq.empty():
         
-        clique, wid = outq.get()
+        wid, clique = outq.get()
 
         print("wid: {}, clique: {}".format(wid, clique))
 
