@@ -5,14 +5,17 @@ import time
 import networkx as NX
 
 MAX_CLIQUE = 2
+CLIQUE = {}
 
 def explore(G, U, C, size):
 
     global MAX_CLIQUE
+    global CLIQUE
 
     if len(U) == 0:
         if size > MAX_CLIQUE:
             MAX_CLIQUE = size
+            CLIQUE = C.copy()
         return
 
     while len(U) > 0:
@@ -21,9 +24,6 @@ def explore(G, U, C, size):
             return
         
         v = U.pop()
-        Uc = U.copy()
-        
-        C.add(v)
 
         Np = set()
         vngbs = G.neighbors(v)
@@ -32,11 +32,10 @@ def explore(G, U, C, size):
             if G.degree(wj) >= MAX_CLIQUE:
                 Np.add(wj)
 
-        explore(G, Uc.intersection(Np), C, size + 1)
+        explore(G, U & Np, C | {v}, size + 1)
 
 def max_clique(G):
 
-    res = []
     nodes = G.nodes()
 
     print("max-clique - nodes: {}".format(nodes))
@@ -55,28 +54,22 @@ def max_clique(G):
             C.add(nodes[v])
 
             ngbs = G.neighbors(nodes[v])
-            
-            for j in range(len(ngbs) + 1):
-                if j > v and G.degree(nodes[j]) >= MAX_CLIQUE:
-                    U.add(nodes[j])
+           
+            for j in range(len(ngbs)):
+                if G.degree(ngbs[j]) >= MAX_CLIQUE:
+                    U.add(ngbs[j])
             
             explore(G, U, C, 1)
-            
-            if len(C) >= MAX_CLIQUE:
-                MAX_CLIQUE = len(C)
-                res = C.copy()
 
-        print("max_clique: {}".format(MAX_CLIQUE))
-
-    return res
+    print("max_clique: {}".format(MAX_CLIQUE))
 
 def test_graph(G):
 
     start = time.time()
-    clique = max_clique(G)
+    max_clique(G)
     end = time.time()
 
-    print("Result: {}, size: {}".format(clique, len(clique)))
+    print("Result: {}, size: {}".format(CLIQUE, MAX_CLIQUE))
     
     delta_own = end - start
 
