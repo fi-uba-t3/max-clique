@@ -1,14 +1,18 @@
+URL_GRAPHS = https://turing.cs.hbg.psu.edu/txn131/file_instances
 PATH_GRAPHS = graphs
+
+GRAPHS = DIMACS_cliques
+CONVERTER = converter
 
 download:
 	# Downloads the testing graphs
-	wget https://turing.cs.hbg.psu.edu/txn131/file_instances/clique/DIMACS_cliques.tar.gz
-	tar xvf DIMACS_cliques.tar.gz
+	wget $(URL_GRAPHS)/clique/$(GRAPHS).tar.gz
+	tar xvf $(GRAPHS).tar.gz
 	# Downloads the converter: bin -> ascii
 	# to format the graphs downloaded
-	wget https://turing.cs.hbg.psu.edu/txn131/file_instances/converter.tar.gz
-	tar xvf converter.tar.gz
-	chmod +x converter/bin2asc
+	wget $(URL_GRAPHS)/$(CONVERTER).tar.gz
+	tar xvf $(CONVERTER).tar.gz
+	chmod +x $(CONVERTER)/bin2asc
 	# Applys the converter
 	./convert.sh
 	# Remove all the unnecessary lines
@@ -16,8 +20,8 @@ download:
 	./transform.py
 	rm graphs/*.clq
 	# Clean the workspace
-	rm -rf DIMACS_cliques DIMACS_cliques.tar.gz
-	rm -rf converter converter.tar.gz
+	rm -rf $(GRAPHS) $(GRAPHS).tar.gz
+	rm -rf $(CONVERTER) $(CONVERTER).tar.gz
 
 generate: 
 	./$(PATH_GRAPHS)/generate-graphs.py
