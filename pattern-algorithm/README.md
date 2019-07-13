@@ -36,6 +36,10 @@ Distributed algorithms for NP-complete MCP - Maximum Clique Problem
  $ ./src/pattern-nx.py [GRAPH_PATH]
 ```
 
+```bash
+ $ ./src/pattern-mr.py [GRAPH_PATH]
+```
+
 - Clean
 
 ```bash

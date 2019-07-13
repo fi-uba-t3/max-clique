@@ -9,41 +9,86 @@ import sys
 import time
 import networkx as NX
 
-def clique_map_reduce():
+def clique_map_reduce(G):
 
-    d = {1:{2,3}, 2:{1,3}, 3:{1,2}}
+    if len(G) == 0:
+        return
 
-    nd = []
-
-    ## MAP
-
-    for k,v in d.items():
-        print("k: {}, v: {}".format(k,v))
-        for val in v:
-            print("key: {}".format(tuple({k} | {val})))
-            print("val: {}".format(v - {val}))
-            nd.append({
-                "k": tuple({k} | {val}),
-                "v": v - {val}
-            })
-
-    print(nd)
-
-    ## REDUCE
+    adj = {u: {v for v in G[u] if v != u} for u in G}
 
     dr = {}
 
-    for item in nd:
-        if item["k"] not in dr:
-            dr[item["k"]] = item["v"]
-        else:
-            dr[item["k"]] = dr[item["k"]] & item["v"]
+    while len(dr) != 1:
 
-    print(dr)
+        ## MAP
+
+        nd = []
+        
+        for k,v in adj.items():
+            for val in v:
+                if type(k) is int:
+                    k = {k}
+                else:
+                    k = {*k}
+                nd.append({
+                    "k": tuple(k | {val}),
+                    "v": v - {val}
+                })
+
+        ## REDUCE
+
+        dr = {}
+
+        for item in nd:
+            if item["k"] not in dr:
+                dr[item["k"]] = item["v"]
+            else:
+                dr[item["k"]] = dr[item["k"]] & item["v"]
+
+        adj = dr
+
+    return list(*adj.keys())
+
+def test_graph(G):
+
+    print("max-clique - nodes: {}".format(G.nodes()))
+
+    start = time.time()
+    
+    clique = clique_map_reduce(G)
+
+    end = time.time()
+
+    print("Time: {}".format(end - start))
+    print("Result: {}, size: {}".format(clique, len(clique)))
+
+def load_graph(path):
+
+    edges = []
+
+    with open(path) as f:
+        lines = f.readlines()
+
+    edges = list(map(lambda x: tuple(x.strip("\n").split(" ")), lines))
+    edges = list(map(lambda y: (int(y[0]), int(y[1])), edges))
+
+    g = NX.Graph()
+    g.add_edges_from(edges)
+
+    return g
 
 def main():
-    clique_map_reduce()
 
+    # Tests
+    if len(sys.argv) <= 1:
+        g = NX.complete_graph(10)
+        test_graph(g)
+        return
+    
+    # Load a graph
+    g = load_graph(sys.argv[1])
+    test_graph(g)
+    
 if __name__ == "__main__":
     main()
 
