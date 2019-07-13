@@ -36,6 +36,8 @@ Distributed algorithms for NP-complete MCP - Maximum Clique Problem
  $ ./src/pattern-nx.py [GRAPH_PATH]
 ```
 
+- _Map-Reduce_ implementation
+
 ```bash
  $ ./src/pattern-mr.py [GRAPH_PATH]
 ```

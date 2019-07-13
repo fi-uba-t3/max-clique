@@ -16,13 +16,14 @@ def clique_map_reduce(G):
 
     adj = {u: {v for v in G[u] if v != u} for u in G}
 
-    dr = {}
+    reduce_items = {}
+    map_items = []
 
-    while len(dr) != 1:
+    while len(reduce_items) != 1:
 
         ## MAP
 
-        nd = []
+        map_items.clear()
         
         for k,v in adj.items():
             for val in v:
@@ -30,22 +31,25 @@ def clique_map_reduce(G):
                     k = {k}
                 else:
                     k = {*k}
-                nd.append({
+                map_items.append({
                     "k": tuple(k | {val}),
                     "v": v - {val}
                 })
 
         ## REDUCE
 
-        dr = {}
+        reduce_items.clear()
 
-        for item in nd:
-            if item["k"] not in dr:
-                dr[item["k"]] = item["v"]
+        for item in map_items:
+            if item["k"] not in reduce_items:
+                reduce_items[item["k"]] = item["v"]
             else:
-                dr[item["k"]] = dr[item["k"]] & item["v"]
+                reduce_items[item["k"]] = reduce_items[item["k"]] & item["v"]
 
-        adj = dr
+        adj.clear()
+
+        for k,v in reduce_items.items():
+            adj[k] = v
 
     return list(*adj.keys())
 
