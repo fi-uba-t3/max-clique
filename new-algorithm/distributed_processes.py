@@ -52,7 +52,9 @@ def worker_main(worker_id, queue_in, queue_out, max_clique_size, graph, visited)
     graph_ordered_nodes.reverse()
     while node_to_visit is not None:
         popped_element = graph_ordered_nodes.pop()
-
+        while popped_element != node_to_visit:
+            graph.remove_node(popped_element)
+            popped_element = graph_ordered_nodes.pop()
         if node_to_visit == popped_element and max_clique_size.value < graph.degree(node_to_visit)  + 1:
             new_clique = explore (node_to_visit, graph, visited, max_clique_size.value)
             with max_clique_size.get_lock():
@@ -96,10 +98,7 @@ def main(graph, work_num):
     count = 0
     while len(max_clique) != max_clique_size.value:
         max_clique = queue_out.get()
-        # print(max_clique)
         count += 1
-
-    # print(count)
 
     return max_clique
 
