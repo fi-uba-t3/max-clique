@@ -20,48 +20,43 @@ import sys
 import time
 import networkx as NX
 
-Q = set()
 CLIQUE = set()
 
-def expand(G, SUBG, CAND):
+def expand(G, K, cand, fini):
 
-    global Q
     global CLIQUE
 
-    if len(SUBG) == 0:
-        if len(Q) > len(CLIQUE):
-            CLIQUE = Q.copy()
-    else:
+    if len(cand) == 0 and len(fini) == 0:
+        if len(K) > len(CLIQUE):
+            CLIQUE = K.copy()
+        return
 
-        u = max(SUBG, key=lambda u: len(CAND & set(G.neighbors(u))))
+    pivot = max(cand | fini, key=lambda u: len(cand & set(G.neighbors(u))))
 
-        while len(CAND - set(G.neighbors(u))) > 0:
+    ext = cand - set(G.neighbors(pivot))
 
-            q = (CAND - set(G.neighbors(u))).pop()
+    for q in ext:
 
-            Q = Q | {q}
+        Kq = K | {q}
 
-            SUBGq = SUBG & set(G.neighbors(q))
-            CANDq = CAND & set(G.neighbors(q))
+        candq = cand & set(G.neighbors(q))
+        finiq = fini & set(G.neighbors(q))
 
-            expand(G, SUBGq, CANDq)
+        cand = cand - {q}
+        fini = fini | {q}
 
-            CAND = CAND - {q}
-            
-            Q = Q - {q}
+        expand(G, Kq, candq, finiq)
 
 def max_clique(G):
 
-    global Q
-
     nodes = G.nodes()
+
+    print("max-clique - nodes: {}".format(nodes))
 
     # Order nodes by its degree
     nodes = list(map(lambda x: (x, G.degree(x)), nodes))
-    nodes = sorted(nodes, key=lambda x: x[1], reverse=True)
+    nodes = sorted(nodes, key=lambda x: x[1])
     nodes = list(map(lambda x: x[0], nodes))
-
-    print("max-clique - nodes: {}".format(nodes))
 
     for v in nodes:
 
@@ -70,10 +65,8 @@ def max_clique(G):
             print("node: {}".format(v))
 
             subn = set(G.neighbors(v)) | {v}
-
-            Q.clear()
-
-            expand(G, subn, subn)
+            
+            expand(G, set(), subn, set())
 
 def test_graph(G):
 

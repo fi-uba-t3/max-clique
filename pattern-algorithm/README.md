@@ -12,6 +12,14 @@ Distributed algorithms for NP-complete MCP - Maximum Clique Problem
 
 #### Parallel
 
+- Tomita, Tanaka, Takahashi _parallel_ version
+
+```bash
+ $ ./src/pattern-ttt-distr.py [--workers=NUM(CPUS) | --graph=PATH(null)]
+```
+
+- Pattabiraman, Gebremedhin, Liao, Choudhary _parallel_ version
+
 ```bash
  $ ./src/pattern-distr.py [--workers=NUM(CPUS) | --graph=PATH(null)]
 ```
@@ -28,6 +36,10 @@ Distributed algorithms for NP-complete MCP - Maximum Clique Problem
 
 ```bash
  $ ./src/pattern-ttt.py [GRAPH_PATH]
+```
+
+```bash
+ $ ./src/pattern-ttt-vertex.py [GRAPH_PATH]
 ```
 
 - [_NX Python libray_](https://networkx.github.io/) iterative implementation of the above algorithm - [see](https://github.com/networkx/networkx/blob/master/networkx/algorithms/clique.py#L103)
