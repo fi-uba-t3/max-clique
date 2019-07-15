@@ -10,16 +10,13 @@ import sys
 import time
 import networkx as NX
 
-def cliques(G):
+def cliques(G, subg, cand, adj):
 
     if len(G) == 0:
         return
 
-    adj = {u: {v for v in G[u] if v != u} for u in G}
     Q = [None]
 
-    subg = set(G)
-    cand = set(G)
     u = max(subg, key=lambda u: len(cand & adj[u]))
     ext_u = cand - adj[u]
     stack = []
@@ -51,15 +48,32 @@ def cliques(G):
 
 def test_graph(G):
 
-    print("max-clique - nodes: {}".format(G.nodes()))
+    nodes = G.nodes()
+
+    print("max-clique - nodes: {}".format(nodes))
+
+    # Order nodes by its degree
+    nodes = list(map(lambda x: (x, G.degree(x)), nodes))
+    nodes = sorted(nodes, key=lambda x: x[1])
+    nodes = list(map(lambda x: x[0], nodes))
 
     MCLIQUE = []
 
+    adj = {u: {v for v in G[u] if v != u} for u in G}
+    
     start = time.time()
 
-    for clique in cliques(G):
-        if len(clique) > len(MCLIQUE):
-            MCLIQUE = clique
+    for v in nodes:
+
+        if G.degree(v) >= len(MCLIQUE):
+
+            print("node: {}".format(v))
+
+            subg = set(G.neighbors(v)) | {v}
+
+            for clique in cliques(G, subg, subg, adj):
+                if len(clique) > len(MCLIQUE):
+                    MCLIQUE = clique
 
     end = time.time()
 
