@@ -52,6 +52,8 @@ def expand(G, SUBG, CAND):
 
 def max_clique(G):
 
+    global Q
+
     nodes = G.nodes()
 
     # Order nodes by its degree
@@ -68,6 +70,8 @@ def max_clique(G):
             print("node: {}".format(v))
 
             subn = set(G.neighbors(v)) | {v}
+
+            Q.clear()
 
             expand(G, subn, subn)
 
