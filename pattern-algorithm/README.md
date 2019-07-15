@@ -24,6 +24,12 @@ Distributed algorithms for NP-complete MCP - Maximum Clique Problem
  $ ./src/pattern-distr.py [--workers=NUM(CPUS) | --graph=PATH(null)]
 ```
 
+- [_NX Python libray_](https://networkx.github.io/) iterative and parallel version
+
+```bash
+ $ ./src/pattern-nx-distr.py [--workers=NUM(CPUS) | --graph=PATH(null)]
+```
+
 #### Secuencial
 
 - Bharath Pattabiraman, Assefaw H. Gebremedhin, Wei-keng Liao, Alok Choudhary - [see](https://arxiv.org/abs/1209.5818)
