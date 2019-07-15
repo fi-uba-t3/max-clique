@@ -2,12 +2,6 @@
 
 Distributed algorithms for NP-complete MCP - Maximum Clique Problem
 
-### Download
-
-```bash
- $ make download
-```
-
 ### Run
 
 #### Parallel
@@ -67,6 +61,14 @@ Distributed algorithms for NP-complete MCP - Maximum Clique Problem
 ```
 
 ### Tests
+
+- Download (_DIMACS_ benchmarks)
+
+```bash
+ $ make download
+```
+
+- _NX_ testing graphs
 
 ```bash
  $ make generate
