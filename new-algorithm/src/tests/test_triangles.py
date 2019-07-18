@@ -1,7 +1,12 @@
 from hypothesis import given
 import hypothesis.strategies as st
-from triangles import Triangles
 
+import sys
+from os import path
+
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+from triangles import Triangles
 
 @st.composite
 def triangles_visited_pair(draw):
@@ -25,7 +30,5 @@ def test_triangles_always_decreasing(triangles_visited_pair):
         assert max_clique_size <= previous_value # Always decreases
         assert max_clique_size <= len(triangles_list) # Always lower than the amount of nodes
         previous_value = max_clique_size
-
-
 
 test_triangles_always_decreasing()

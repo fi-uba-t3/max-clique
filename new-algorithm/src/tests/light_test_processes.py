@@ -1,9 +1,17 @@
 import unittest
 import networkx as NX
-from poc import main
+
+import sys
+from os import path
+
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+from parallel import main
+
+workers_num = 4
 
 def calc_and_compare(G):
-    result = len(main(G))
+    result = len(main(G, workers_num))
     nx_result = NX.graph_clique_number(G)
     return result == nx_result
 
@@ -69,11 +77,11 @@ class ResultTests(unittest.TestCase):
         assert(calc_and_compare(NX.gnp_random_graph(50, 0.5, 7)))
     def test_result_gnp_50_0_95_1(self):
         assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, 8)))
-    def test_result_gnp_50_0_95_2(self):
+    def test_result_gnp_20_0_95_2(self):
         assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, 9)))
-    def test_result_gnp_50_0_95_3(self):
+    def test_result_gnp_20_0_95_3(self):
         assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, 10)))
-    def test_result_gnp_50_0_95_4(self):
+    def test_result_gnp_20_0_95_4(self):
         assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, 11)))
     def test_result_empty_graph(self):
         assert(calc_and_compare(NX.empty_graph()))
@@ -95,8 +103,6 @@ class ResultTests(unittest.TestCase):
         assert(calc_and_compare(NX.turan_graph(50, 5)))
     def test_result_wheel_graph(self):
         assert(calc_and_compare(NX.wheel_graph(50)))
-    
-
 
 if __name__ == "__main__":
     unittest.main()

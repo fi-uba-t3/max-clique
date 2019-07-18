@@ -1,6 +1,12 @@
 import unittest
 import networkx as NX
-from distributed_processes import main
+
+import sys
+from os import path
+
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+from parallel import main
 
 workers_num = 10
 
@@ -20,8 +26,6 @@ class ResultTests(unittest.TestCase):
         assert(calc_and_compare(NX.circulant_graph(100, [1,2,3])))
     def test_result_dgm_200(self):
         assert(calc_and_compare(NX.dorogovtsev_goltsev_mendes_graph(10)))
-    
-
 
 if __name__ == "__main__":
     unittest.main()

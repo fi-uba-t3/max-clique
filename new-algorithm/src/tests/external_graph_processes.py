@@ -1,15 +1,22 @@
 import unittest
 import networkx as NX
-from poc import main
+
+import sys
+from os import path
+
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+from parallel import main
+
+workers_num = 10
 
 def calc_and_compare(G):
-    result = len(main(G))
+    result = len(main(G, workers_num))
     nx_result = NX.graph_clique_number(G)
     return result == nx_result
 
-
 def create_graph_from_file(graph_name):
-    return NX.read_edgelist('./test_graphs/{}.clq'.format(graph_name))
+    return NX.read_edgelist('../../graphs/{}.clq'.format(graph_name))
 
 class ResultTests(unittest.TestCase):
     def test_result_brock_200_2(self):
@@ -30,9 +37,7 @@ class ResultTests(unittest.TestCase):
         assert(calc_and_compare(create_graph_from_file('c250.9')))
     def test_result_keller5(self):
         assert(calc_and_compare(create_graph_from_file('keller5')))
-    
-
-
 
 if __name__ == "__main__":
     unittest.main()
+

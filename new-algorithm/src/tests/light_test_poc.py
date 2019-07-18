@@ -1,10 +1,15 @@
 import unittest
 import networkx as NX
-from distributed_processes import main
-workers_num = 4
+
+import sys
+from os import path
+
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+
+from iterative import main
 
 def calc_and_compare(G):
-    result = len(main(G, workers_num))
+    result = len(main(G))
     nx_result = NX.graph_clique_number(G)
     return result == nx_result
 
@@ -40,14 +45,6 @@ class ResultTests(unittest.TestCase):
         assert(calc_and_compare(NX.barbell_graph(5, 5)))
     def test_result_barbell_graph_20_10(self):
         assert(calc_and_compare(NX.barbell_graph(20, 10)))
-    def test_result_k_multipartite_1_1(self):
-        assert(calc_and_compare(NX.complete_multipartite_graph([1,1])))
-    def test_result_k_multipartite_10_5(self):
-        assert(calc_and_compare(NX.complete_multipartite_graph([10,5])))
-    def test_result_k_multipartite_10_10(self):
-        assert(calc_and_compare(NX.complete_multipartite_graph([10,10])))
-    def test_result_k_multipartite_5_5_5_5_5(self):
-        assert(calc_and_compare(NX.complete_multipartite_graph([5,5,5,5,5])))
     def test_result_circular_ladder_graph_20(self):
         assert(calc_and_compare(NX.circular_ladder_graph(20)))
     def test_result_circular_ladder_graph_10(self):
@@ -70,11 +67,11 @@ class ResultTests(unittest.TestCase):
         assert(calc_and_compare(NX.gnp_random_graph(50, 0.5, 7)))
     def test_result_gnp_50_0_95_1(self):
         assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, 8)))
-    def test_result_gnp_20_0_95_2(self):
+    def test_result_gnp_50_0_95_2(self):
         assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, 9)))
-    def test_result_gnp_20_0_95_3(self):
+    def test_result_gnp_50_0_95_3(self):
         assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, 10)))
-    def test_result_gnp_20_0_95_4(self):
+    def test_result_gnp_50_0_95_4(self):
         assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, 11)))
     def test_result_empty_graph(self):
         assert(calc_and_compare(NX.empty_graph()))
@@ -96,8 +93,6 @@ class ResultTests(unittest.TestCase):
         assert(calc_and_compare(NX.turan_graph(50, 5)))
     def test_result_wheel_graph(self):
         assert(calc_and_compare(NX.wheel_graph(50)))
-    
-
 
 if __name__ == "__main__":
     unittest.main()
