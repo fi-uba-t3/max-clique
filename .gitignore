@@ -4,4 +4,5 @@
 __pycache__/
 .ipynb_checkpoints/
 pattern-algorithm/graphs/*.txt
+new-algorithm/graphs/*.txt
 **/venv

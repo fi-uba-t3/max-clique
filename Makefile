@@ -1,10 +1,14 @@
 URL_GRAPHS = https://turing.cs.hbg.psu.edu/txn131/file_instances
 PATH_GRAPHS = graphs
 
+PATTERN_PATH = pattern-algorithm/$(PATH_GRAPHS)
+NEW_PATH = new-algorithm/$(PATH_GRAPHS)
+
 GRAPHS = DIMACS_cliques
 CONVERTER = converter
 
 download:
+	mkdir $(PATH_GRAPHS)
 	# Downloads the testing graphs
 	wget $(URL_GRAPHS)/clique/$(GRAPHS).tar.gz
 	tar xvf $(GRAPHS).tar.gz
@@ -18,10 +22,14 @@ download:
 	# Remove all the unnecessary lines
 	# in graph´s files
 	./transform.py
-	rm graphs/*.clq
+	rm $(PATH_GRAPHS)/*.clq
+	# Move graphs to its folders
+	cp $(PATH_GRAPHS)/* $(PATTERN_PATH)
+	cp $(PATH_GRAPHS)/* $(NEW_PATH)
 	# Clean the workspace
 	rm -rf $(GRAPHS) $(GRAPHS).tar.gz
 	rm -rf $(CONVERTER) $(CONVERTER).tar.gz
+	rm -r $(PATH_GRAPHS)
 
 generate: 
 	./$(PATH_GRAPHS)/generate-graphs.py
