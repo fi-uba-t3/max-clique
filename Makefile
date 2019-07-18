@@ -31,14 +31,8 @@ download:
 	rm -rf $(CONVERTER) $(CONVERTER).tar.gz
 	rm -r $(PATH_GRAPHS)
 
-generate: 
-	./$(PATH_GRAPHS)/generate-graphs.py
-	mv *.txt $(PATH_GRAPHS)
-
 clean:
-	rm -rf src/__pycache__/
+	rm -f $(wildcard $(PATTERN_PATH)/*.txt)
+	rm -f $(wildcard $(NEW_PATH)/*.txt)
 
-realclean: clean
-	rm -f $(filter-out $(PATH_GRAPHS)/graph-small.txt $(PATH_GRAPHS)/graph-big.txt, $(wildcard $(PATH_GRAPHS)/*.txt))
-
-.PHONY: generate clean realclean download
+.PHONY: clean download
