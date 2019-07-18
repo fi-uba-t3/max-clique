@@ -67,26 +67,20 @@ $ pip3 install -r requirements.txt
 - Clean
 
 ```bash
- $ make clean
+ $ ./clean.sh
 ```
 
 ### Tests
 
-- Download (_DIMACS_ benchmarks)
+- All tests
 
 ```bash
- $ make download
+ $ pytest
 ```
 
-- _NX_ testing graphs
+- Single test
 
 ```bash
- $ make generate
-```
-
-- Clean
-
-```bash
- $ make realclean
+ $ pytest FILE
 ```
 

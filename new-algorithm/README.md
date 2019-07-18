@@ -26,6 +26,12 @@ $ pip3 install -r requirements.txt
  $ ./src/new-iter.py [GRAPH_PATH]
 ```
 
+- Clean
+
+```bash
+ $ ./clean.sh
+```
+
 ### Tests
 
 - All tests

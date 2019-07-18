@@ -55,10 +55,13 @@ def calc_max_clique(wid, G, max_clique, q_in, q_out):
 
             expand(wid, G, set(), CAND, set(), max_clique, q_out)
 
-def maxclique(graph, work_num):
+def maxclique(graph, work_num, loaded=False):
     
-    G = Graph()
-    G.load(graph)
+    if not loaded:
+        G = Graph()
+        G.load(graph)
+    else:
+        G = graph
 
     workers = []
     queues = []
