@@ -7,7 +7,6 @@ workers_num = 10
 def calc_and_compare(G):
     result = len(main(G, workers_num))
     nx_result = NX.graph_clique_number(G)
-    print(result)
     return result == nx_result
 
 
