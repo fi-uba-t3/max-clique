@@ -1,10 +1,14 @@
 URL_GRAPHS = https://turing.cs.hbg.psu.edu/txn131/file_instances
 PATH_GRAPHS = graphs
 
+PATTERN_PATH = pattern-algorithm/$(PATH_GRAPHS)
+NEW_PATH = new-algorithm/$(PATH_GRAPHS)
+
 GRAPHS = DIMACS_cliques
 CONVERTER = converter
 
 download:
+	mkdir $(PATH_GRAPHS)
 	# Downloads the testing graphs
 	wget $(URL_GRAPHS)/clique/$(GRAPHS).tar.gz
 	tar xvf $(GRAPHS).tar.gz
@@ -18,19 +22,17 @@ download:
 	# Remove all the unnecessary lines
 	# in graph´s files
 	./transform.py
-	rm graphs/*.clq
+	rm $(PATH_GRAPHS)/*.clq
+	# Move graphs to its folders
+	cp $(PATH_GRAPHS)/* $(PATTERN_PATH)
+	cp $(PATH_GRAPHS)/* $(NEW_PATH)
 	# Clean the workspace
 	rm -rf $(GRAPHS) $(GRAPHS).tar.gz
 	rm -rf $(CONVERTER) $(CONVERTER).tar.gz
-
-generate: 
-	./$(PATH_GRAPHS)/generate-graphs.py
-	mv *.txt $(PATH_GRAPHS)
+	rm -r $(PATH_GRAPHS)
 
 clean:
-	rm -rf src/__pycache__/
+	rm -f $(wildcard $(PATTERN_PATH)/*.txt)
+	rm -f $(wildcard $(NEW_PATH)/*.txt)
 
-realclean: clean
-	rm -f $(filter-out $(PATH_GRAPHS)/graph-small.txt $(PATH_GRAPHS)/graph-big.txt, $(wildcard $(PATH_GRAPHS)/*.txt))
-
-.PHONY: generate clean realclean download
+.PHONY: clean download

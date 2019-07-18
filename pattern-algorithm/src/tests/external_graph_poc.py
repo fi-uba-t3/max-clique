@@ -6,13 +6,13 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from iterative import main
+from TTT_iter import max_clique
 
 TXT = 'txt'
 CLQ = 'clq'
 
 def calc_and_compare(G):
-    result = len(main(G))
+    result = len(max_clique(G))
     nx_result = NX.graph_clique_number(G)
     return result == nx_result
 
