@@ -1,6 +1,6 @@
 # max-clique
 
-Distributed algorithms for NP-complete MCP - Maximum Clique Problem
+Distributed algorithms for NP-Hard MCP - Maximum Clique Problem
 
 ### Contents
 
