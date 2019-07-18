@@ -1,15 +1,12 @@
 import unittest
 import networkx as NX
 from distributed_processes import main
-
 workers_num = 4
 
 def calc_and_compare(G):
     result = len(main(G, workers_num))
     nx_result = NX.graph_clique_number(G)
     return result == nx_result
-
-default_seed = 1
 
 class ResultTests(unittest.TestCase):
 
@@ -57,10 +54,28 @@ class ResultTests(unittest.TestCase):
         assert(calc_and_compare(NX.circular_ladder_graph(10)))
     def test_result_circular_ladder_graph_5(self):
         assert(calc_and_compare(NX.circular_ladder_graph(5)))
-    def test_result_gnp_50_0_5(self):
-        assert(calc_and_compare(NX.gnp_random_graph(50, 0.5, default_seed)))
-    def test_result_gnp_50_0_95(self):
-        assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, default_seed)))
+    def test_result_gnp_50_0_5_1(self):
+        assert(calc_and_compare(NX.gnp_random_graph(50, 0.5, 1)))
+    def test_result_gnp_50_0_5_2(self):
+        assert(calc_and_compare(NX.gnp_random_graph(50, 0.5, 2)))
+    def test_result_gnp_50_0_5_3(self):
+        assert(calc_and_compare(NX.gnp_random_graph(50, 0.5, 3)))
+    def test_result_gnp_50_0_5_4(self):
+        assert(calc_and_compare(NX.gnp_random_graph(50, 0.5, 4)))
+    def test_result_gnp_50_0_5_5(self):
+        assert(calc_and_compare(NX.gnp_random_graph(50, 0.5, 5)))
+    def test_result_gnp_50_0_5_6(self):
+        assert(calc_and_compare(NX.gnp_random_graph(50, 0.5, 6)))
+    def test_result_gnp_50_0_5_7(self):
+        assert(calc_and_compare(NX.gnp_random_graph(50, 0.5, 7)))
+    def test_result_gnp_50_0_95_1(self):
+        assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, 8)))
+    def test_result_gnp_20_0_95_2(self):
+        assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, 9)))
+    def test_result_gnp_20_0_95_3(self):
+        assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, 10)))
+    def test_result_gnp_20_0_95_4(self):
+        assert(calc_and_compare(NX.gnp_random_graph(20, 0.95, 11)))
     def test_result_empty_graph(self):
         assert(calc_and_compare(NX.empty_graph()))
     def test_result_full_5ary_tree_4_tall(self):

@@ -19,7 +19,7 @@ class ResultTests(unittest.TestCase):
     def test_result_circulant_graph_100(self):
         assert(calc_and_compare(NX.circulant_graph(100, [1,2,3])))
     def test_result_dgm_200(self):
-        assert(calc_and_compare(NX.dorogovtsev_goltsev_mendes_graph(200)))
+        assert(calc_and_compare(NX.dorogovtsev_goltsev_mendes_graph(10)))
     
 
 
