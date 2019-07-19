@@ -1,15 +1,21 @@
+import uuid
 import time
 from datetime import timedelta
 from multiprocessing import Process, Queue, Value
 
 from graph import Graph
 
-def expand(wid, G, K, cand, fini, max_clique, q_out):
+METRICS = "metrics-pattern-{}.txt"
+
+def expand(wid, G, K, cand, fini, max_clique_size, calls_made, q_out):
+
+    with calls_made.get_lock():
+        calls_made.value += 1
 
     if len(cand) == 0 and len(fini) == 0:
-        with max_clique.get_lock():
-            if len(K) > max_clique.value:
-                max_clique.value = len(K)
+        with max_clique_size.get_lock():
+            if len(K) > max_clique_size.value:
+                max_clique_size.value = len(K)
                 q_out.put((wid, K.copy()))
         return
 
@@ -27,9 +33,10 @@ def expand(wid, G, K, cand, fini, max_clique, q_out):
         cand = cand - {q}
         fini = fini | {q}
 
-        expand(wid, G, Kq, candq, finiq, max_clique, q_out)
+        expand(wid, G, Kq, candq, finiq,
+                max_clique_size, calls_made, q_out)
 
-def calc_max_clique(wid, G, max_clique, q_in, q_out):
+def calc_max_clique(wid, G, max_clique_size, calls_made, q_in, q_out):
 
     quit = False
 
@@ -41,7 +48,7 @@ def calc_max_clique(wid, G, max_clique, q_in, q_out):
             quit = True
             continue
 
-        if G.degree(item) >= max_clique.value:
+        if G.degree(item) >= max_clique_size.value:
 
             print("wid: {}, node: {}".format(wid, item))
 
@@ -50,10 +57,11 @@ def calc_max_clique(wid, G, max_clique, q_in, q_out):
             # check if the vertexes
             # verify the clique condition
             for neighbor in G.neighbors(item):
-                if G.degree(neighbor) >= max_clique.value:
+                if G.degree(neighbor) >= max_clique_size.value:
                     CAND.add(neighbor)
 
-            expand(wid, G, set(), CAND, set(), max_clique, q_out)
+            expand(wid, G, set(), CAND, set(),
+                    max_clique_size, calls_made, q_out)
 
 def maxclique(graph, work_num, loaded=False):
     
@@ -65,19 +73,22 @@ def maxclique(graph, work_num, loaded=False):
 
     workers = []
     queues = []
-
-    val = Value('i', 2)
     outq = Queue()
+
+    max_clique = []
+    max_clique_size = Value('i', 2)
 
     for w in range(work_num):
         queues.append(Queue())
 
+    # Metrics values
+    calls_made = Value('i', 0)
+    count_of_cliques_received = 0
+    
     nodes = G.nodes()
 
     print("nodes: {}".format(nodes))
 
-    start = time.time()
-    
     # Order nodes by its degree
     nodes = list(map(lambda x: (x, G.degree(x)), nodes))
     nodes = sorted(nodes, key=lambda x: x[1])
@@ -86,8 +97,13 @@ def maxclique(graph, work_num, loaded=False):
     for v in range(len(nodes)):
         queues[v % work_num].put(nodes[v])
 
+    start = time.time()
+    
     for w in range(work_num):
-        p = Process(target=calc_max_clique, args=(w, G, val, queues[w], outq,))
+        p = Process(target=calc_max_clique, args=(w, G,
+                                                    max_clique_size,
+                                                    calls_made,
+                                                    queues[w], outq,))
         workers.append(p)
         p.start()
 
@@ -97,18 +113,19 @@ def maxclique(graph, work_num, loaded=False):
     for w in workers:
         w.join()
 
-    max_clique = []
+    end = time.time()
 
+    # Find the maximum clique
     while not outq.empty():
         
         wid, clique = outq.get()
+
+        count_of_cliques_received += 1
 
         print("wid: {}, clique: {}".format(wid, clique))
 
         if len(clique) > len(max_clique):
             max_clique = clique
-
-    end = time.time()
 
     d = end - start
     dt = time.strptime(str(timedelta(seconds=d)).split(".")[0], "%H:%M:%S")
@@ -117,6 +134,13 @@ def maxclique(graph, work_num, loaded=False):
                                         dt.tm_hour,
                                         dt.tm_min,
                                         dt.tm_sec))
-    return max_clique
+
+    print("Cliques found: {}, Calls made: {}".format(count_of_cliques_received,
+                                                        calls_made.value))
+
+    with open(METRICS.format(uuid.uuid4()), "w") as f:
+        f.write(str((count_of_cliques_received, calls_made.value)))
+
+    return list(max_clique)
 
 

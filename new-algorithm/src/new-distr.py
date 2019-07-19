@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-import time
 import networkx as NX
-from datetime import timedelta
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from parallel import main
@@ -12,17 +10,7 @@ def run(graph, workers):
 
     G = NX.read_edgelist(graph)
 
-    start = time.time()
     res = main(G, workers)
-    end = time.time()
-
-    d = end - start
-    dt = time.strptime(str(timedelta(seconds=d)).split(".")[0], "%H:%M:%S")
-
-    print("Delta time: hour: {}, min: {}, sec: {}".format(
-                                        dt.tm_hour,
-                                        dt.tm_min,
-                                        dt.tm_sec))
 
     print("Result: {}, size: {}".format(res, len(res)))
 

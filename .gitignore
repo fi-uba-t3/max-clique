@@ -1,8 +1,10 @@
 .vscode
 .hypothesis
 **/*.pyc
+**/venv
 __pycache__/
 .ipynb_checkpoints/
+
+**/metrics*.txt
 pattern-algorithm/graphs/*.txt
 new-algorithm/graphs/*.txt
-**/venv

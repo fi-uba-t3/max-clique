@@ -1,7 +1,12 @@
+import uuid
+import time
 import networkx as NX
+from datetime import timedelta
 from multiprocessing import Process, Queue, Value
 
 from triangles import Triangles
+
+METRICS = "metrics-new-{}.txt"
 
 def compute_triangles(graph, main_node, nodes_to_ignore):
 
@@ -13,6 +18,7 @@ def compute_triangles(graph, main_node, nodes_to_ignore):
         degree = graph.degree(node)
         triangles = degree - 1 # Agregar de nuevo el nodo
         degree_sum += degree
+        
         if node != main_node:
             T.add(node, triangles)
     
@@ -33,7 +39,7 @@ def explore(node, _graph, visited, max_already_found_clique_size, calls_made, hi
         calls_made.value += 1
     
     subgraph_freezed = _graph.subgraph(list(_graph.neighbors(node)) + [node])
-    triangles, degree_sum = compute_triangles (subgraph_freezed, node, visited)
+    triangles, degree_sum = compute_triangles(subgraph_freezed, node, visited)
 
     if verify_clique(subgraph_freezed, node, degree_sum):
         return list(subgraph_freezed.nodes())        
@@ -50,7 +56,11 @@ def explore(node, _graph, visited, max_already_found_clique_size, calls_made, hi
                 hits_triangle.value += 1
             break
         
-        new_clique = explore(next_neighbor, subgraph, visited, max_already_found_clique_size, calls_made, hits_triangle)
+        new_clique = explore(next_neighbor,
+                                subgraph,
+                                visited,
+                                max_already_found_clique_size,
+                                calls_made, hits_triangle)
         
         if len(clique) < len(new_clique):
             clique = new_clique
@@ -71,7 +81,7 @@ def worker_main(worker_id, queue_in, queue_out, max_clique_size, graph, visited,
     
     while node_to_visit is not None:
 
-        print("node: {}".format(node_to_visit))
+        print("wid: {}, node: {}".format(worker_id, node_to_visit))
 
         popped_element = graph_ordered_nodes.pop()
         
@@ -81,7 +91,11 @@ def worker_main(worker_id, queue_in, queue_out, max_clique_size, graph, visited,
         
         if node_to_visit == popped_element and max_clique_size.value < graph.degree(node_to_visit) + 1:
             
-            new_clique = explore(node_to_visit, graph, visited, max_clique_size.value, calls_made, hits_triangle)
+            new_clique = explore(node_to_visit,
+                                    graph,
+                                    visited,
+                                    max_clique_size.value,
+                                    calls_made, hits_triangle)
             
             with max_clique_size.get_lock():
                 if max_clique_size.value < len(new_clique):
@@ -103,14 +117,19 @@ def main(graph, work_num):
         visited[node] = False
     
     max_clique = []
+    max_clique_size = Value('i', 0)
 
     queue_in = Queue()
     queue_out = Queue()
 
-    max_clique_size = Value('i', 0)
+    # Metrics values
     calls_made = Value('i', 0)
     hits_triangle = Value('i', 0)
+    count_of_cliques_received = 0
+    
     workers = []
+
+    start = time.time()
 
     for worker_id in range(work_num):
         p = Process(target=worker_main, args=(worker_id,
@@ -133,14 +152,28 @@ def main(graph, work_num):
     for worker in workers:
         worker.join()
 
+    end = time.time()
+
     # Exhaust the total of cliques received, until the last one
-    count_of_cliques_received = 0
     while len(max_clique) != max_clique_size.value:
         max_clique = queue_out.get()
         count_of_cliques_received += 1
 
+    d = end - start
+    dt = time.strptime(str(timedelta(seconds=d)).split(".")[0], "%H:%M:%S")
+
+    print("Delta time: hour: {}, min: {}, sec: {}".format(
+                                        dt.tm_hour,
+                                        dt.tm_min,
+                                        dt.tm_sec))
+
     print('Cliques found: {}, Calls made: {}, Hits Tri: {}'.format(
         count_of_cliques_received, calls_made.value, hits_triangle.value))
-    
+
+    with open(METRICS.format(uuid.uuid4()), "w") as f:
+        f.write(str((count_of_cliques_received,
+                        calls_made.value,
+                        hits_triangle.value)))
+
     return max_clique
 
