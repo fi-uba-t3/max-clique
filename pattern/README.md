@@ -39,23 +39,19 @@ $ pip3 install -r requirements.txt
 - Bharath Pattabiraman, Assefaw H. Gebremedhin, Wei-keng Liao, Alok Choudhary - [see](https://arxiv.org/abs/1209.5818)
 
 ```bash
- $ ./src/pattern-recur.py [GRAPH_PATH]
+ $ ./src/pattern-iter.py [GRAPH_PATH]
 ```
 
 - Etsuji Tomita, Akira Tanaka, Haruhisa Takahashi - [see](https://doi.org/10.1016/j.tcs.2006.06.015)
 
 ```bash
- $ ./src/pattern-ttt.py [GRAPH_PATH]
-```
-
-```bash
- $ ./src/pattern-ttt-vertex.py [GRAPH_PATH]
+ $ ./src/pattern-ttt-iter.py [GRAPH_PATH]
 ```
 
 - [_NX Python libray_](https://networkx.github.io/) iterative implementation of the above algorithm - [see](https://github.com/networkx/networkx/blob/master/networkx/algorithms/clique.py#L103)
 
 ```bash
- $ ./src/pattern-nx.py [GRAPH_PATH]
+ $ ./src/pattern-nx-iter.py [GRAPH_PATH]
 ```
 
 - _Map-Reduce_ implementation
