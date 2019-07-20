@@ -6,5 +6,5 @@ __pycache__/
 .ipynb_checkpoints/
 
 **/metrics*.txt
-pattern-algorithm/graphs/*.txt
-new-algorithm/graphs/*.txt
+pattern/graphs/*.txt
+new/graphs/*.txt

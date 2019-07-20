@@ -7,13 +7,13 @@ Distributed algorithms for NP-Hard MCP - Maximum Clique Problem
 - Pattern Algorithms
 
 ```bash
- $ cd pattern-algorithm
+ $ cd pattern
 ``` 
 
 - New Algorithm
 
 ```bash
- $ cd new-algorithm
+ $ cd new
 ``` 
 
 ### Download
