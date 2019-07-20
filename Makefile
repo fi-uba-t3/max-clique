@@ -1,8 +1,8 @@
 URL_GRAPHS = https://turing.cs.hbg.psu.edu/txn131/file_instances
 PATH_GRAPHS = graphs
 
-PATTERN_PATH = pattern-algorithm/$(PATH_GRAPHS)
-NEW_PATH = new-algorithm/$(PATH_GRAPHS)
+PATTERN_PATH = pattern/$(PATH_GRAPHS)
+NEW_PATH = new/$(PATH_GRAPHS)
 
 GRAPHS = DIMACS_cliques
 CONVERTER = converter
