@@ -52,7 +52,7 @@ for size_to_edges in [lambda x: x ** (3/2), lambda x: x ** 2 // 2]:
 
 # Barbasi-Albert
 for size_to_edges in [lambda x: x // 2, lambda x: x - 1, lambda x: x * 2 // 3]:
-    for size in [20, 40, 50, 70, 100, 150, 200]:
+    for size in [20, 40, 50, 70, 100]:
         file_name = './{}/bar-alb_{}_{}_{}.txt'.format(PATH, size, size_to_edges(size), seed)
         G = NX.barabasi_albert_graph(size, size_to_edges(size), seed)
         NX.write_edgelist(G, file_name)
