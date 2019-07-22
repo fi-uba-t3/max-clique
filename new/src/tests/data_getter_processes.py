@@ -6,7 +6,7 @@ from os import path
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from src.algorithms.parallel import main
+from algorithms.parallel import main
 
 seed = 100
 
