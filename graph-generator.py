@@ -27,7 +27,7 @@ for prob in [0.2, 0.4, 0.5, 0.6, 0.7]:
 
 # Duplication-divergence
 for prob in [0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]:
-    for size in [20, 40, 50, 70, 100, 150, 200]:
+    for size in [20, 40, 50, 70, 100]:
         file_name = './{}/duplication_divergence_{}_{}_{}.txt'.format(PATH, size, prob, seed)
         G = NX.duplication_divergence_graph(size, prob, seed)
         NX.write_edgelist(G, file_name)
@@ -36,7 +36,7 @@ for prob in [0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]:
 
 # GNM
 for size_to_edges in [lambda x: x // 2, lambda x: x, lambda x: x * 3 // 2]:
-    for size in [20, 40, 50, 70, 100, 150, 200]:
+    for size in [20, 40, 50, 70, 100]:
         file_name = './{}/gnm_{}_{}_{}.txt'.format(PATH, size, size_to_edges(size), seed)
         G = NX.gnm_random_graph(size, size_to_edges(size), seed)
         NX.write_edgelist(G, file_name)
@@ -61,7 +61,7 @@ for size_to_edges in [lambda x: x // 2, lambda x: x - 1, lambda x: x * 2 // 3]:
 # Powerlaw clustering
 for prob in [0.2, 0.5, 0.9]:
     for size_to_edges in [lambda x: x // 2, lambda x: x - 1, lambda x: x * 2 // 3]:
-        for size in [20, 40, 50, 70, 100, 150, 200]:
+        for size in [20, 40, 50, 70, 100]:
             file_name = './{}/powerlaw_cluster_{}_{}_{}_{}.txt'.format(PATH, size, size_to_edges(size), prob, seed)
             G = NX.powerlaw_cluster_graph(size, size_to_edges(size), prob, seed)
             NX.write_edgelist(G, file_name)
@@ -71,7 +71,7 @@ for prob in [0.2, 0.5, 0.9]:
 # newman_watts_strogatz_graph
 for k in [2, 5, 10, 19]:
     for size_to_edges in [lambda x: x // 2, lambda x: x, lambda x: x * 3 // 2]:
-        for size in [20, 40, 50, 70, 100, 150, 200]:
+        for size in [20, 40, 50, 70, 100]:
             file_name = './{}/new_watts_stro_{}_{}_{}_{}.txt'.format(PATH, size, k, size_to_edges(size), seed)
             G = NX.newman_watts_strogatz_graph(size, k, size_to_edges(size), seed)
             NX.write_edgelist(G, file_name)
@@ -88,7 +88,7 @@ for k in [2, 5, 10, 19]:
 # watts_strogatz_graph
 for k in [2, 5, 10, 19]:
     for size_to_edges in [lambda x: x // 2, lambda x: x, lambda x: x * 3 // 2]:
-        for size in [20, 40, 50, 70, 100, 150, 200]:
+        for size in [20, 40, 50, 70, 100]:
             file_name = './{}/watts_stro_{}_{}_{}_{}.txt'.format(PATH, size, k, size_to_edges(size), seed)
             G = NX.watts_strogatz_graph(size, k, size_to_edges(size), seed)
             NX.write_edgelist(G, file_name)
@@ -101,4 +101,4 @@ for k in [2, 5, 10, 19]:
             G = NX.watts_strogatz_graph(size, k, size_to_edges(size), seed)
             NX.write_edgelist(G, file_name)
             seed += 1
-        
+
