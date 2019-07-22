@@ -4,15 +4,18 @@ import networkx as NX
 import sys
 from os import path
 
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+grandfather_dir = path.dirname(path.dirname(path.abspath(__file__)))
+
+sys.path.append(grandfather_dir)
 
 from algorithms.parallel import main
 
 seed = 100
 
-for proba in [0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]:
-    for size in [20, 40, 50, 70, 100, 200]:
-        print('gnp {} {} {}'.format(size, proba, seed))
-        main(NX.gnp_random_graph(size, proba, seed), 4)
-        seed += 1
+import os
+directory = grandfather_dir + '/../graphs/own-graphs'
 
+for filename in os.listdir(directory):
+    if filename.endswith(".txt"):
+        G = NX.read_edgelist(directory + '/' + filename)
+        main(G, 4)
