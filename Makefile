@@ -4,6 +4,8 @@ PATH_GRAPHS = graphs
 PATTERN_PATH = pattern/$(PATH_GRAPHS)
 NEW_PATH = new/$(PATH_GRAPHS)
 
+GENERATED_PATH = own-graphs
+
 GRAPHS = DIMACS_cliques
 CONVERTER = converter
 
@@ -31,8 +33,23 @@ download:
 	rm -rf $(CONVERTER) $(CONVERTER).tar.gz
 	rm -r $(PATH_GRAPHS)
 
+generate:
+	# Create respective folders
+	mkdir $(PATTERN_PATH)/$(GENERATED_PATH)
+	mkdir $(NEW_PATH)/$(GENERATED_PATH)
+	# Generate graphs
+	./graph-generator.py
+	# Move them to its folders
+	cp $(GENERATED_PATH)/* $(PATTERN_PATH)/$(GENERATED_PATH)
+	cp $(GENERATED_PATH)/* $(NEW_PATH)/$(GENERATED_PATH)
+	# Clean the workspace
+	rm -r $(GENERATED_PATH)
 clean:
 	rm -f $(wildcard $(PATTERN_PATH)/*.txt)
 	rm -f $(wildcard $(NEW_PATH)/*.txt)
+
+clean-gen:
+	rm -r $(PATTERN_PATH)/$(GENERATED_PATH)
+	rm -r $(NEW_PATH)/$(GENERATED_PATH)
 
 .PHONY: clean download

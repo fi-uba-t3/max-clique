@@ -7,4 +7,6 @@ __pycache__/
 
 **/metrics*.txt
 pattern/graphs/*.txt
+pattern/graphs/own-graphs
 new/graphs/*.txt
+new/graphs/own-graphs
