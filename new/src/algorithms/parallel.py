@@ -10,7 +10,7 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from algorithms.triangles import Triangles
 
-METRICS = "metrics-new-{}.txt"
+METRICS = "metrics-new.txt"
 
 def compute_triangles(graph, main_node, nodes_to_ignore):
 
@@ -110,7 +110,7 @@ def worker_main(worker_id, queue_in, queue_out, max_clique_size, graph, visited,
 
         node_to_visit = queue_in.get()
 
-def main(graph, work_num):
+def main(graph, work_num, metrics=False):
 
     print("Graph - Nodes: {}, Edges: {}".format(
                 len(graph.nodes()), len(graph.edges())))
@@ -171,13 +171,16 @@ def main(graph, work_num):
                                         dt.tm_min,
                                         dt.tm_sec))
 
-    print('Cliques found: {}, Calls made: {}, Hits Tri: {}'.format(
-        count_of_cliques_received, calls_made.value, hits_triangle.value))
+    # Writes and prints the metrics
+    if metrics:
+        
+        print('Cliques found: {}, Calls made: {}, Hits Tri: {}'.format(
+            count_of_cliques_received, calls_made.value, hits_triangle.value))
 
-    with open(METRICS.format(uuid.uuid4()), "w") as f:
-        f.write(str((count_of_cliques_received,
-                        calls_made.value,
-                        hits_triangle.value)))
+        with open(METRICS, "a") as f:
+            f.write("{},{},{},{},{},{}\n".format(
+                len(graph.nodes()), len(graph.edges()), count_of_cliques_received,
+                calls_made.value, hits_triangle.value, d))
 
     return max_clique
 

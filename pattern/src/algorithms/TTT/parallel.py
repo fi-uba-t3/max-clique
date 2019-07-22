@@ -9,7 +9,7 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from algorithms.graph import Graph
 
-METRICS = "metrics-pattern-{}.txt"
+METRICS = "metrics-pattern.txt"
 
 def expand(wid, G, K, cand, fini, max_clique_size, calls_made, q_out):
 
@@ -67,13 +67,16 @@ def calc_max_clique(wid, G, max_clique_size, calls_made, q_in, q_out):
             expand(wid, G, set(), CAND, set(),
                     max_clique_size, calls_made, q_out)
 
-def maxclique(graph, work_num, loaded=False):
+def maxclique(graph, work_num, loaded=False, metrics=False):
     
     if not loaded:
         G = Graph()
         G.load(graph)
     else:
         G = graph
+
+    print("Graph - Nodes: {}, Edges: {}".format(
+                len(graph.nodes()), len(graph.edges())))
 
     workers = []
     queues = []
@@ -139,11 +142,16 @@ def maxclique(graph, work_num, loaded=False):
                                         dt.tm_min,
                                         dt.tm_sec))
 
-    print("Cliques found: {}, Calls made: {}".format(count_of_cliques_received,
-                                                        calls_made.value))
+    # Writes and prints the metrics
+    if metrics:
 
-    with open(METRICS.format(uuid.uuid4()), "w") as f:
-        f.write(str((count_of_cliques_received, calls_made.value)))
+        print("Cliques found: {}, Calls made: {}".format(
+            count_of_cliques_received, calls_made.value))
+
+        with open(METRICS, "a") as f:
+            f.write("{},{},{},{},{}\n".format(
+                len(nodes), len(G.edges()), count_of_cliques_received,
+                calls_made.value, d))
 
     return list(max_clique)
 
