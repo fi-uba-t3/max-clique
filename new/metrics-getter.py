@@ -20,6 +20,7 @@ with open(PATH, "w") as f:
 
 for filename in os.listdir(directory):
     if filename.endswith(".txt"):
+        print("graph: {}".format(filename))
         G = NX.read_edgelist(directory + '/' + filename)
         main(G, 4, metrics=True)
 
