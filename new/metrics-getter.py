@@ -11,7 +11,7 @@ sys.path.append(grandfather_dir)
 
 from src.algorithms.parallel import main
 
-directory = grandfather_dir + '/new/graphs/own-graph'
+directory = grandfather_dir + '/new/graphs/own-graphs'
 
 PATH = "metrics-new.txt"
 
