@@ -16,9 +16,25 @@ Distributed algorithms for NP-Hard MCP - Maximum Clique Problem
  $ cd new
 ``` 
 
-### Download
+### Graphs
 
-- _DIMACS_ benchmarks
+- **Generate**
+
+_NX python library_ random graphs
+
+ ```bash
+ $ make generate
+```
+
+- Clean
+
+```bash
+ $ make clean-gen
+```
+
+- **Download**
+
+_DIMACS_ benchmarks
 
 ```bash
  $ make download
