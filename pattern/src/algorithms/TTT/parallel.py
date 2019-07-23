@@ -1,12 +1,7 @@
-import sys
 import time
-from os import path
+import networkx as NX
 from datetime import timedelta
 from multiprocessing import Process, Queue, Value
-
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
-from src.algorithms.graph import Graph
 
 METRICS = "metrics-pattern.txt"
 
@@ -69,13 +64,12 @@ def calc_max_clique(wid, G, max_clique_size, calls_made, q_in, q_out):
 def maxclique(graph, work_num, loaded=False, metrics=False):
     
     if not loaded:
-        G = Graph()
-        G.load(graph)
+        G = NX.read_edgelist(graph)
     else:
         G = graph
 
     print("Graph - Nodes: {}, Edges: {}".format(
-                len(graph.nodes()), len(graph.edges())))
+                len(G.nodes()), len(G.edges())))
 
     workers = []
     queues = []
