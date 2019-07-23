@@ -66,6 +66,14 @@ $ pip3 install -r requirements.txt
  $ ./clean.sh
 ```
 
+### Metrics
+
+It runs the _parallel_ algorithm with the graphs generated using `make generate`
+
+```bash
+ $ ./metrics-getter.py
+```
+
 ### Tests
 
 - All tests
