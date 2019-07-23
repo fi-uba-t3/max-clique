@@ -7,7 +7,7 @@ from multiprocessing import Process, Queue, Value
 
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-from algorithms.graph import Graph
+from src.algorithms.graph import Graph
 
 METRICS = "metrics-pattern.txt"
 
