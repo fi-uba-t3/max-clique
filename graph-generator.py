@@ -10,7 +10,7 @@ os.mkdir(PATH)
 seed = 100
 
 # Erdos-Renyi
-for prob in [0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]:
+for prob in [0.2, 0.4, 0.5, 0.6, 0.7, 0.8]:
     for size in [20, 40, 50, 70]:
         file_name = './{}/erdos_renyi_{}_{}_{}.txt'.format(PATH, size, prob, seed)
         G = NX.erdos_renyi_graph(size, prob, seed)
@@ -26,7 +26,7 @@ for prob in [0.2, 0.4, 0.5, 0.6, 0.7]:
         seed += 1
 
 # Duplication-divergence
-for prob in [0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]:
+for prob in [0.2, 0.4, 0.5, 0.6, 0.7, 0.8]:
     for size in [20, 40, 50, 70, 100]:
         file_name = './{}/duplication_divergence_{}_{}_{}.txt'.format(PATH, size, prob, seed)
         G = NX.duplication_divergence_graph(size, prob, seed)
