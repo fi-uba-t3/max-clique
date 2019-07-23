@@ -1,5 +1,4 @@
 import sys
-import uuid
 import time
 from os import path
 import networkx as NX
