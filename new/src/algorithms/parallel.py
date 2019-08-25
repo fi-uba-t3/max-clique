@@ -19,7 +19,8 @@ def compute_triangles(graph, main_node, nodes_to_ignore):
     for node in graph.nodes():
         
         degree = graph.degree(node)
-        triangles = degree - 1 # Agregar de nuevo el nodo
+        # Adds the node again
+        triangles = degree - 1 
         degree_sum += degree
         
         if node != main_node:
@@ -36,7 +37,7 @@ def verify_clique(graph, node, degree_sum):
 
 # Returns the max clique size if it is bigger max_already_found_clique 
 # already_accounted_nodes no cuenta node
-def explore(node, _graph, visited, max_already_found_clique_size, calls_made, hits_triangle):
+def explore(node, _graph, visited, max_already_found_clique_size, calls_made):
     
     with calls_made.get_lock():
         calls_made.value += 1
@@ -55,15 +56,13 @@ def explore(node, _graph, visited, max_already_found_clique_size, calls_made, hi
     for max_expected_clique_size, next_neighbor in triangles.get_t_n_iterator():
     
         if max_expected_clique_size <= max_already_found_clique_size:
-            with hits_triangle.get_lock():
-                hits_triangle.value += 1
             break
         
         new_clique = explore(next_neighbor,
                                 subgraph,
                                 visited,
                                 max_already_found_clique_size,
-                                calls_made, hits_triangle)
+                                calls_made)
         
         if len(clique) < len(new_clique):
             clique = new_clique
@@ -76,7 +75,7 @@ def explore(node, _graph, visited, max_already_found_clique_size, calls_made, hi
     
     return clique
 
-def worker_main(worker_id, queue_in, queue_out, max_clique_size, graph, visited, calls_made, hits_triangle):
+def worker_main(worker_id, queue_in, queue_out, max_clique_size, graph, visited, calls_made):
     
     node_to_visit = queue_in.get()
     graph_ordered_nodes = list(graph.nodes())
@@ -98,7 +97,7 @@ def worker_main(worker_id, queue_in, queue_out, max_clique_size, graph, visited,
                                     graph,
                                     visited,
                                     max_clique_size.value,
-                                    calls_made, hits_triangle)
+                                    calls_made)
             
             with max_clique_size.get_lock():
                 if max_clique_size.value < len(new_clique):
@@ -109,7 +108,7 @@ def worker_main(worker_id, queue_in, queue_out, max_clique_size, graph, visited,
 
         node_to_visit = queue_in.get()
 
-def main(graph, work_num, metrics=False):
+def main(graph, work_num, metrics=False, name=None):
 
     print("Graph - Nodes: {}, Edges: {}".format(
                 len(graph.nodes()), len(graph.edges())))
@@ -127,7 +126,6 @@ def main(graph, work_num, metrics=False):
 
     # Metrics values
     calls_made = Value('i', 0)
-    hits_triangle = Value('i', 0)
     count_of_cliques_received = 0
     
     workers = []
@@ -140,8 +138,7 @@ def main(graph, work_num, metrics=False):
                                             queue_out,
                                             max_clique_size,
                                             graph, visited,
-                                            calls_made,
-                                            hits_triangle))
+                                            calls_made))
         workers.append(p)
         p.start()
 
@@ -173,13 +170,26 @@ def main(graph, work_num, metrics=False):
     # Writes and prints the metrics
     if metrics:
         
-        print('Cliques found: {}, Calls made: {}, Hits Tri: {}'.format(
-            count_of_cliques_received, calls_made.value, hits_triangle.value))
+        print('Cliques found: {}, Calls made: {}'.format(
+            count_of_cliques_received, calls_made.value))
+
+        if name is not None:
+            result_metrics = "{},{},{},{},{},{}\n".format(
+                                name,
+                                len(graph.nodes()),
+                                len(graph.edges()),
+                                count_of_cliques_received,
+                                calls_made.value, d)
+        else:
+            result_metrics = "{},{},{},{},{},{}\n".format(
+                                "none",
+                                len(graph.nodes()),
+                                len(graph.edges()),
+                                count_of_cliques_received,
+                                calls_made.value, d)
 
         with open(METRICS, "a") as f:
-            f.write("{},{},{},{},{},{}\n".format(
-                len(graph.nodes()), len(graph.edges()), count_of_cliques_received,
-                calls_made.value, hits_triangle.value, d))
+            f.write(result_metrics)
 
     return max_clique
 

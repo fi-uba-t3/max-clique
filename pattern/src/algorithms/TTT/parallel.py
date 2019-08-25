@@ -61,7 +61,7 @@ def calc_max_clique(wid, G, max_clique_size, calls_made, q_in, q_out):
             expand(wid, G, set(), CAND, set(),
                     max_clique_size, calls_made, q_out)
 
-def maxclique(graph, work_num, loaded=False, metrics=False):
+def maxclique(graph, work_num, loaded=False, metrics=False, name=None):
     
     if not loaded:
         G = NX.read_edgelist(graph)
@@ -141,10 +141,23 @@ def maxclique(graph, work_num, loaded=False, metrics=False):
         print("Cliques found: {}, Calls made: {}".format(
             count_of_cliques_received, calls_made.value))
 
+        if name is not None:
+            result_metrics = "{},{},{},{},{},{}\n".format(
+                                name,
+                                len(G.nodes()),
+                                len(G.edges()),
+                                count_of_cliques_received,
+                                calls_made.value, d)
+        else:
+            result_metrics = "{},{},{},{},{},{}\n".format(
+                                "none",
+                                len(G.nodes()),
+                                len(G.edges()),
+                                count_of_cliques_received,
+                                calls_made.value, d)
+
         with open(METRICS, "a") as f:
-            f.write("{},{},{},{},{}\n".format(
-                len(nodes), len(G.edges()), count_of_cliques_received,
-                calls_made.value, d))
+            f.write(result_metrics)
 
     return list(max_clique)
 

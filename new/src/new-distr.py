@@ -17,7 +17,7 @@ def run(graph, workers):
 if __name__ == "__main__":
 
     parser = ArgumentParser(
-                description='MCP-TTT',
+                description='MCP',
                 formatter_class=ArgumentDefaultsHelpFormatter)
     
     parser.add_argument(

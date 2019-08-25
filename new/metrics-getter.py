@@ -16,11 +16,11 @@ directory = grandfather_dir + '/new/graphs/own-graphs'
 PATH = "metrics-new.txt"
 
 with open(PATH, "w") as f:
-    f.write("nodes,edges,cliques,calls,triangles,time\n")
+    f.write("name,nodes,edges,cliques,calls,time\n")
 
 for filename in os.listdir(directory):
     if filename.endswith(".txt"):
         print("graph: {}".format(filename))
         G = NX.read_edgelist(directory + '/' + filename)
-        main(G, 4, metrics=True)
+        main(G, 6, metrics=True, name=filename)
 
