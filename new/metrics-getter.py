@@ -22,5 +22,5 @@ for filename in os.listdir(directory):
     if filename.endswith(".txt"):
         print("graph: {}".format(filename))
         G = NX.read_edgelist(directory + '/' + filename)
-        main(G, 6, metrics=True, name=filename)
+        main(G, 6, metrics=True, name=filename.strip(".txt"))
 
