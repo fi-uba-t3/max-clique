@@ -38,7 +38,7 @@ generate:
 	mkdir $(PATTERN_PATH)/$(GENERATED_PATH)
 	mkdir $(NEW_PATH)/$(GENERATED_PATH)
 	# Generate graphs
-	./scripts/graph-generator.py
+	python ./scripts/graph-generator.py
 	# Move them to its folders
 	cp $(GENERATED_PATH)/* $(PATTERN_PATH)/$(GENERATED_PATH)
 	cp $(GENERATED_PATH)/* $(NEW_PATH)/$(GENERATED_PATH)
