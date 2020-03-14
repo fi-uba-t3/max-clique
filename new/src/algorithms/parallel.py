@@ -30,8 +30,8 @@ def compute_triangles(graph, main_node, nodes_to_ignore):
 
 def verify_clique(graph, node, degree_sum):
     
-    d = graph.degree(node)
-    clique_edges = d * (d + 1)
+    degree = graph.degree(node)
+    clique_edges = degree * (degree + 1)
     
     return degree_sum == clique_edges
 
@@ -39,8 +39,9 @@ def verify_clique(graph, node, degree_sum):
 # already_accounted_nodes no cuenta node
 def explore(node, _graph, visited, max_already_found_clique_size, calls_made):
     
-    with calls_made.get_lock():
-        calls_made.value += 1
+    if calls_made is not None:
+        with calls_made.get_lock():
+            calls_made.value += 1
     
     subgraph_freezed = _graph.subgraph(list(_graph.neighbors(node)) + [node])
     triangles, degree_sum = compute_triangles(subgraph_freezed, node, visited)
@@ -83,8 +84,6 @@ def worker_main(worker_id, queue_in, queue_out, max_clique_size, graph, visited,
     
     while node_to_visit is not None:
 
-        print("wid: {}, node: {}".format(worker_id, node_to_visit))
-
         popped_element = graph_ordered_nodes.pop()
         
         while popped_element != node_to_visit:
@@ -108,31 +107,25 @@ def worker_main(worker_id, queue_in, queue_out, max_clique_size, graph, visited,
 
         node_to_visit = queue_in.get()
 
-def main(graph, work_num, metrics=False, name=None):
 
-    print("Graph - Nodes: {}, Edges: {}".format(
-                len(graph.nodes()), len(graph.edges())))
+def process_parallel(graph, workers_num, calls_made=None):
+
+    count_of_cliques_received = 0
 
     visited = {}
 
     for node in graph.nodes():
         visited[node] = False
-    
+
     max_clique = []
     max_clique_size = Value('i', 0)
 
     queue_in = Queue()
     queue_out = Queue()
 
-    # Metrics values
-    calls_made = Value('i', 0)
-    count_of_cliques_received = 0
-    
     workers = []
 
-    start = time.time()
-
-    for worker_id in range(work_num):
+    for worker_id in range(workers_num):
         p = Process(target=worker_main, args=(worker_id,
                                             queue_in,
                                             queue_out,
@@ -146,47 +139,55 @@ def main(graph, work_num, metrics=False, name=None):
         queue_in.put(node)
 
     # Signal End of queue
-    for i in range(work_num):
+    for i in range(workers_num):
         queue_in.put(None) 
 
     for worker in workers:
         worker.join()
 
-    end = time.time()
-
+    count_of_cliques_received = queue_out.qsize()
+    
     # Exhaust the total of cliques received, until the last one
     while len(max_clique) != max_clique_size.value:
         max_clique = queue_out.get()
-        count_of_cliques_received += 1
 
-    d = end - start
-    dt = time.strptime(str(timedelta(seconds=d)).split(".")[0], "%H:%M:%S")
+    return max_clique, count_of_cliques_received
 
-    print("Delta time: hour: {}, min: {}, sec: {}".format(
-                                        dt.tm_hour,
-                                        dt.tm_min,
-                                        dt.tm_sec))
+    
+
+def main(graph, workers_num, metrics=False, name='none'):
+
+    print("Graph - Nodes: {}, Edges: {}".format(
+                len(graph.nodes()), len(graph.edges())))
+
+    visited = {}
+
+    for node in graph.nodes():
+        visited[node] = False
+
+    # Measure time
+    start = time.time()
+
+    max_clique, count_of_cliques_received = process_parallel(graph, workers_num)
+
+    end = time.time()
+    time_diff = end - start
 
     # Writes and prints the metrics
     if metrics:
         
-        print('Cliques found: {}, Calls made: {}'.format(
-            count_of_cliques_received, calls_made.value))
+        # Metrics values
+        calls_made = Value('i', 0)
 
-        if name is not None:
-            result_metrics = "{},{},{},{},{},{}\n".format(
-                                name,
-                                len(graph.nodes()),
-                                len(graph.edges()),
-                                count_of_cliques_received,
-                                calls_made.value, d)
-        else:
-            result_metrics = "{},{},{},{},{},{}\n".format(
-                                "none",
-                                len(graph.nodes()),
-                                len(graph.edges()),
-                                count_of_cliques_received,
-                                calls_made.value, d)
+        max_clique, count_of_cliques_received = process_parallel(graph, workers_num, calls_made=calls_made)
+
+        result_metrics = "{},{},{},{},{},{}\n".format(
+                            name,
+                            len(graph.nodes()),
+                            len(graph.edges()),
+                            count_of_cliques_received,
+                            calls_made.value,
+                            time_diff)
 
         with open(METRICS, "a") as f:
             f.write(result_metrics)
