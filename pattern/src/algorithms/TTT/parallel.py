@@ -7,8 +7,9 @@ METRICS = "metrics-pattern.txt"
 
 def expand(wid, G, K, cand, fini, max_clique_size, calls_made, q_out):
 
-    with calls_made.get_lock():
-        calls_made.value += 1
+    if calls_made is not None:
+        with calls_made.get_lock():
+            calls_made.value += 1
 
     if len(cand) == 0 and len(fini) == 0:
         with max_clique_size.get_lock():
@@ -48,8 +49,6 @@ def calc_max_clique(wid, G, max_clique_size, calls_made, q_in, q_out):
 
         if G.degree(item) >= max_clique_size.value:
 
-            print("wid: {}, node: {}".format(wid, item))
-
             CAND = {item}
 
             # check if the vertexes
@@ -61,15 +60,7 @@ def calc_max_clique(wid, G, max_clique_size, calls_made, q_in, q_out):
             expand(wid, G, set(), CAND, set(),
                     max_clique_size, calls_made, q_out)
 
-def maxclique(graph, work_num, loaded=False, metrics=False, name=None):
-    
-    if not loaded:
-        G = NX.read_edgelist(graph)
-    else:
-        G = graph
-
-    print("Graph - Nodes: {}, Edges: {}".format(
-                len(G.nodes()), len(G.edges())))
+def process_parallel(G, workers_num, calls_made=None):
 
     workers = []
     queues = []
@@ -78,13 +69,9 @@ def maxclique(graph, work_num, loaded=False, metrics=False, name=None):
     max_clique = []
     max_clique_size = Value('i', 2)
 
-    for w in range(work_num):
+    for w in range(workers_num):
         queues.append(Queue())
 
-    # Metrics values
-    calls_made = Value('i', 0)
-    count_of_cliques_received = 0
-    
     nodes = G.nodes()
 
     print("nodes: {}".format(nodes))
@@ -95,11 +82,11 @@ def maxclique(graph, work_num, loaded=False, metrics=False, name=None):
     nodes = list(map(lambda x: x[0], nodes))
 
     for v in range(len(nodes)):
-        queues[v % work_num].put(nodes[v])
+        queues[v % workers_num].put(nodes[v])
 
     start = time.time()
-    
-    for w in range(work_num):
+
+    for w in range(workers_num):
         p = Process(target=calc_max_clique, args=(w, G,
                                                     max_clique_size,
                                                     calls_made,
@@ -113,19 +100,36 @@ def maxclique(graph, work_num, loaded=False, metrics=False, name=None):
     for w in workers:
         w.join()
 
-    end = time.time()
+
+    count_of_cliques_received = outq.qsize()
 
     # Find the maximum clique
-    while not outq.empty():
-        
+    while not outq.empty():        
         wid, clique = outq.get()
-
-        count_of_cliques_received += 1
 
         print("wid: {}, clique: {}".format(wid, clique))
 
         if len(clique) > len(max_clique):
             max_clique = clique
+
+    return max_clique, count_of_cliques_received
+    
+
+def maxclique(graph, workers_num, loaded=False, metrics=False, name='none'):
+    
+    if not loaded:
+        G = NX.read_edgelist(graph)
+    else:
+        G = graph
+
+    print("Graph - Nodes: {}, Edges: {}".format(
+                len(G.nodes()), len(G.edges())))
+
+    start = time.time()
+
+    max_clique, _ = process_parallel(graph, workers_num)
+    
+    end = time.time()
 
     d = end - start
     dt = time.strptime(str(timedelta(seconds=d)).split(".")[0], "%H:%M:%S")
@@ -137,25 +141,20 @@ def maxclique(graph, work_num, loaded=False, metrics=False, name=None):
 
     # Writes and prints the metrics
     if metrics:
+        # Metrics values
+        calls_made = Value('i', 0)
+        _, count_of_cliques_received = process_parallel(graph, workers_num, calls_made=calls_made)
+    
 
         print("Cliques found: {}, Calls made: {}".format(
             count_of_cliques_received, calls_made.value))
 
-        if name is not None:
-            result_metrics = "{},{},{},{},{},{}\n".format(
-                                name,
-                                len(G.nodes()),
-                                len(G.edges()),
-                                count_of_cliques_received,
-                                calls_made.value, d)
-        else:
-            result_metrics = "{},{},{},{},{},{}\n".format(
-                                "none",
-                                len(G.nodes()),
-                                len(G.edges()),
-                                count_of_cliques_received,
-                                calls_made.value, d)
-
+        result_metrics = "{},{},{},{},{},{}\n".format(
+                            name,
+                            len(G.nodes()),
+                            len(G.edges()),
+                            count_of_cliques_received,
+                            calls_made.value, d)
         with open(METRICS, "a") as f:
             f.write(result_metrics)
 
